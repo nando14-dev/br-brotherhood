@@ -8,6 +8,8 @@ export default function ClanLayout({ children }: { children: React.ReactNode }) 
   const pathname = usePathname()
   const router = useRouter()
 
+  const hideHeader = ['/clan/perfil', '/clan/onboarding'].includes(pathname)
+
   const tabs = [
     { href: '/clan', icon: '🛡️', label: 'Clã' },
     { href: '/clan/streak', icon: '🔥', label: 'Streak' },
@@ -19,7 +21,7 @@ export default function ClanLayout({ children }: { children: React.ReactNode }) 
     <div style={{ background: '#080A0F', minHeight: '100dvh', maxWidth: 430, margin: '0 auto', position: 'relative' }}>
       <EmberBackground />
       <div style={{ position: 'relative', zIndex: 1 }}>
-        <Header />
+        {!hideHeader && <Header />}
         {children}
       </div>
       <nav style={{
