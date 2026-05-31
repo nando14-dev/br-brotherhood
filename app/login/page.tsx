@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import EmberBackground from '@/components/EmberBackground'
 
 export default function LoginPage() {
   const [mode, setMode] = useState<'login' | 'register' | 'verify' | 'forgot'>('login')
@@ -77,7 +78,7 @@ export default function LoginPage() {
             <button style={btnSecondary} onClick={() => setMode('register')}>Criar conta</button>
           </div>
         </>}
-
+        <EmberBackground />
         {/* REGISTER */}
         {mode === 'register' && <>
           <div style={{ fontSize: 40, marginBottom: 12 }}>⚔️</div>

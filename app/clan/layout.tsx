@@ -1,6 +1,7 @@
 'use client'
 
 import { usePathname, useRouter } from 'next/navigation'
+import EmberBackground from '@/components/EmberBackground'
 
 export default function ClanLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -15,7 +16,10 @@ export default function ClanLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <div style={{ background: '#080A0F', minHeight: '100dvh', maxWidth: 430, margin: '0 auto', position: 'relative' }}>
-      {children}
+      <EmberBackground />
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        {children}
+      </div>
       <nav style={{
         position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
         width: '100%', maxWidth: 430, background: 'rgba(8,10,15,0.96)',

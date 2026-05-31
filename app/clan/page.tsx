@@ -1,8 +1,10 @@
 'use client'
 
+
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import LoadingScreen from '@/components/LoadingScreen'
 
 interface ClanData {
   name: string
@@ -64,11 +66,7 @@ export default function ClanPage() {
     return map[role] || role
   }
 
-  if (loading) return (
-    <div style={{ background: '#080A0F', minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F0EAD6', fontFamily: 'Cinzel, serif', gap: 12 }}>
-      <span style={{ fontSize: 24 }}>🇧🇷</span> Carregando...
-    </div>
-  )
+if (loading) return <LoadingScreen />
 
   return (
     <div style={{ background: '#080A0F', minHeight: '100dvh', color: '#F0EAD6', fontFamily: "'DM Sans', sans-serif", maxWidth: 430, margin: '0 auto', padding: '20px 16px 100px' }}>
