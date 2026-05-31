@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from 'next/navigation'
 import EmberBackground from '@/components/EmberBackground'
+import Header from '@/components/Header'
 
 export default function ClanLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -18,6 +19,7 @@ export default function ClanLayout({ children }: { children: React.ReactNode }) 
     <div style={{ background: '#080A0F', minHeight: '100dvh', maxWidth: 430, margin: '0 auto', position: 'relative' }}>
       <EmberBackground />
       <div style={{ position: 'relative', zIndex: 1 }}>
+        <Header />
         {children}
       </div>
       <nav style={{
