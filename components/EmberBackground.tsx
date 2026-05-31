@@ -26,17 +26,17 @@ export default function EmberBackground() {
       return {
         x: Math.random() * canvas!.width,
         y: canvas!.height + 10,
-        size: Math.random() * 2.5 + 1,
+        size: Math.random() * 4 + 1.5,
         speedY: Math.random() * 0.7 + 0.3,
         speedX: (Math.random() - 0.5) * 0.4,
-        opacity: Math.random() * 0.65 + 0.25,
+        opacity: Math.random() * 0.9 + 0.4,
         life: 0,
         maxLife: Math.random() * 220 + 150,
         color: colors[Math.floor(Math.random() * colors.length)]
       }
     }
 
-    for (let i = 0; i < 45; i++) {
+    for (let i = 0; i < 60; i++) {
       const e = createEmber()
       e.y = Math.random() * canvas.height
       e.life = Math.random() * e.maxLife
