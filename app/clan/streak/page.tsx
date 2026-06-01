@@ -73,7 +73,14 @@ export default function StreakPage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
-    const today = new Date().toISOString().split('T')[0]
+    // Usa horário local do Brasil
+    const now = new Date()
+    const today = now.toLocaleDateString('en-CA') // formato YYYY-MM-DD
+
+    const yesterday = new Date(now)
+    yesterday.setDate(yesterday.getDate() - 1)
+    const yesterdayStr = yesterday.toLocaleDateString('en-CA')
+
     const { data: existing } = await supabase
       .from('streaks')
       .select('*')
@@ -81,14 +88,25 @@ export default function StreakPage() {
       .single()
 
     let newStreak = 1
+
     if (existing) {
-      const yesterday = new Date()
-      yesterday.setDate(yesterday.getDate() - 1)
-      const yesterdayStr = yesterday.toISOString().split('T')[0]
-      newStreak = existing.last_checkin === yesterdayStr ? existing.current_streak + 1 : 1
-      await supabase.from('streaks').update({ current_streak: newStreak, last_checkin: today }).eq('user_id', user.id)
+      if (existing.last_checkin === yesterdayStr) {
+        // Consecutivo — incrementa
+        newStreak = existing.current_streak + 1
+      } else if (existing.last_checkin === today) {
+        // Já fez checkin hoje
+        setCheckedIn(true)
+        return
+      }
+      // Se não foi ontem nem hoje, reseta pra 1
+      await supabase
+        .from('streaks')
+        .update({ current_streak: newStreak, last_checkin: today })
+        .eq('user_id', user.id)
     } else {
-      await supabase.from('streaks').insert({ user_id: user.id, current_streak: 1, last_checkin: today })
+      await supabase
+        .from('streaks')
+        .insert({ user_id: user.id, current_streak: 1, last_checkin: today })
     }
 
     setMyStreak(newStreak)
