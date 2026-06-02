@@ -15,13 +15,21 @@ export default function PerfilPage() {
   const [saving, setSaving] = useState(false)
   const [email, setEmail] = useState('')
   const [players, setPlayers] = useState<any[]>([])
+  const [clanRole, setClanRole] = useState('member')
   const [toast, setToast] = useState('')
   const router = useRouter()
   const supabase = createClient()
 
-  function showToast(msg: string) {
-    setToast(msg)
-    setTimeout(() => setToast(''), 2500)
+  function showToast(msg: string) { setToast(msg); setTimeout(() => setToast(''), 2500) }
+
+  function roleInfo(role: string) {
+    const map: Record<string, { label: string; bg: string; color: string }> = {
+      leader:   { label: 'Líder',    bg: '#FFDF00', color: '#3a1000' },
+      coLeader: { label: 'Co-Líder', bg: '#f97316', color: '#fff' },
+      admin:    { label: 'Ancião',   bg: '#3b82f6', color: '#fff' },
+      member:   { label: 'Membro',   bg: '#888',    color: '#fff' },
+    }
+    return map[role] || { label: role, bg: '#888', color: '#fff' }
   }
 
   useEffect(() => {
@@ -31,20 +39,14 @@ export default function PerfilPage() {
       setEmail(user.email || '')
 
       const { data: profile } = await supabase
-        .from('profiles')
-        .select('avatar_emoji, display_name')
-        .eq('id', user.id)
-        .single()
+        .from('profiles').select('avatar_emoji, display_name, clan_role')
+        .eq('id', user.id).single()
 
       if (profile?.avatar_emoji) setAvatar(profile.avatar_emoji)
-      if (profile?.display_name) setDisplayName(profile.display_name)
-      else setDisplayName(user.email?.split('@')[0] || '')
+      if (profile?.clan_role) setClanRole(profile.clan_role)
+      setDisplayName(profile?.display_name || user.email?.split('@')[0] || '')
 
-      const { data: links } = await supabase
-        .from('player_links')
-        .select('*')
-        .eq('user_id', user.id)
-
+      const { data: links } = await supabase.from('player_links').select('*').eq('user_id', user.id)
       if (links) setPlayers(links)
       setLoading(false)
     }
@@ -75,100 +77,110 @@ export default function PerfilPage() {
     router.push('/login')
   }
 
-  function roleLabel(role: string) {
-    const map: Record<string, string> = { leader: '👑 Líder', coLeader: '🔱 Co-Líder', admin: '⚜️ Ancião', member: '🗡️ Membro' }
-    return map[role] || role
-  }
-
   if (loading) return <LoadingScreen />
 
+  const role = roleInfo(clanRole)
+
+  const sectionHdr = (title: string) => (
+    <div style={{ display:'flex', alignItems:'center', gap:8, margin:'16px 0 8px' }}>
+      <div style={{ fontSize:12, fontWeight:900, color:'#3a1000', textTransform:'uppercase', letterSpacing:'0.5px' }}>{title}</div>
+      <div style={{ flex:1, height:2, background:'linear-gradient(90deg,#c8960c,transparent)', borderRadius:1 }} />
+    </div>
+  )
+
   return (
-    <div style={{ padding: '16px 16px 100px', fontFamily: "'DM Sans', sans-serif", color: '#F0EAD6' }}>
+    <div style={{ overflowY:'auto', height:'100%', padding:'16px 16px 40px' }}>
 
       {/* PERFIL CARD */}
-      <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(200,151,58,0.25)', borderRadius: 16, padding: 16, marginBottom: 12 }}>
-        
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
-          <div style={{ width: 56, height: 56, borderRadius: 14, background: 'linear-gradient(135deg,#1a2a4a,#2a1a4a)', border: '2px solid #C8973A', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>
+      <div style={{ background:'linear-gradient(180deg,#f5ead8,#e8d8b8)', border:'2px solid #c8a870', borderRadius:14, padding:16, marginBottom:4, boxShadow:'0 4px 0 #a07040' }}>
+
+        {/* Avatar + Nome */}
+        <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:16 }}>
+          <div style={{ width:60, height:60, borderRadius:14, background:'linear-gradient(135deg,#2a4a8a,#4a2a8a)', border:'3px solid #c8960c', display:'flex', alignItems:'center', justifyContent:'center', fontSize:30, flexShrink:0, boxShadow:'0 4px 0 #805800' }}>
             {avatar}
           </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ flex:1, minWidth:0 }}>
             {editingName ? (
-              <div style={{ display: 'flex', gap: 6 }}>
+              <div style={{ display:'flex', gap:6 }}>
                 <input
                   value={displayName}
                   onChange={e => setDisplayName(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && saveName()}
                   autoFocus
-                  style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid #C8973A', borderRadius: 8, padding: '6px 10px', color: '#F0EAD6', fontFamily: "'DM Sans', sans-serif", fontSize: 15, fontWeight: 700, outline: 'none' }}
+                  style={{ flex:1, background:'rgba(255,255,255,0.7)', border:'2px solid #c8960c', borderRadius:8, padding:'6px 10px', color:'#1a0800', fontFamily:"'Nunito',sans-serif", fontSize:15, fontWeight:900, outline:'none' }}
                 />
-                <button onClick={saveName} disabled={saving} style={{ background: '#C8973A', border: 'none', borderRadius: 8, padding: '6px 12px', color: '#080A0F', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
+                <button onClick={saveName} disabled={saving} style={{ background:'linear-gradient(180deg,#FFDF00,#c8960c)', border:'none', borderRadius:8, padding:'6px 12px', color:'#3a1000', fontWeight:900, fontSize:12, cursor:'pointer', boxShadow:'0 2px 0 #805800' }}>
                   {saving ? '...' : 'OK'}
                 </button>
               </div>
             ) : (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <div style={{ fontFamily: 'Cinzel, serif', fontSize: 18, fontWeight: 700 }}>{displayName}</div>
-                <button onClick={() => setEditingName(true)} style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 6, padding: '3px 7px', color: 'rgba(240,234,214,0.4)', fontSize: 11, cursor: 'pointer' }}>✏️</button>
+              <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                <div style={{ fontSize:18, fontWeight:900, color:'#1a0800' }}>{displayName}</div>
+                <button onClick={() => setEditingName(true)} style={{ background:'rgba(0,0,0,0.08)', border:'1px solid #c0a060', borderRadius:6, padding:'2px 7px', color:'#8a6030', fontSize:11, cursor:'pointer', fontWeight:900 }}>✏️</button>
               </div>
             )}
-            <div style={{ fontSize: 11, color: 'rgba(240,234,214,0.4)', marginTop: 2 }}>{email}</div>
+            <div style={{ display:'flex', alignItems:'center', gap:6, marginTop:4 }}>
+              <span style={{ fontSize:9, fontWeight:900, padding:'2px 7px', borderRadius:6, textTransform:'uppercase', background:role.bg, color:role.color }}>{role.label}</span>
+              <span style={{ fontSize:10, fontWeight:700, color:'#8a6030' }}>{email}</span>
+            </div>
           </div>
         </div>
 
-        {/* EMOJI PICKER */}
-        <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1.5, color: 'rgba(240,234,214,0.4)', marginBottom: 8 }}>Foto de perfil</div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {/* Emoji Picker */}
+        <div style={{ fontSize:10, fontWeight:900, textTransform:'uppercase', letterSpacing:'1.5px', color:'#8a6030', marginBottom:8 }}>Foto de perfil</div>
+        <div style={{ display:'flex', gap:7, flexWrap:'wrap' }}>
           {EMOJIS.map(e => (
             <div key={e} onClick={() => saveAvatar(e)} style={{
-              width: 44, height: 44, borderRadius: 10,
-              background: avatar === e ? 'rgba(200,151,58,0.1)' : 'rgba(255,255,255,0.07)',
-              border: `1.5px solid ${avatar === e ? '#C8973A' : 'rgba(255,255,255,0.07)'}`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 22, cursor: 'pointer',
-              boxShadow: avatar === e ? '0 0 12px rgba(200,151,58,0.2)' : 'none'
+              width:44, height:44, borderRadius:10,
+              background: avatar === e ? 'linear-gradient(180deg,#FFDF00,#c8960c)' : 'rgba(255,255,255,0.5)',
+              border: `2px solid ${avatar === e ? '#c8960c' : '#c0a060'}`,
+              display:'flex', alignItems:'center', justifyContent:'center',
+              fontSize:22, cursor:'pointer',
+              boxShadow: avatar === e ? '0 3px 0 #805800' : '0 2px 0 #a07040',
             }}>{e}</div>
           ))}
         </div>
       </div>
 
-      {/* JOGADORES VINCULADOS */}
-      <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 2, color: 'rgba(240,234,214,0.4)', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
-        Jogadores vinculados
-        <div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg,rgba(200,151,58,0.25),transparent)' }} />
-      </div>
-
+      {/* JOGADORES */}
+      {sectionHdr('Jogadores vinculados')}
       {players.length === 0 ? (
-        <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,107,26,0.2)', borderRadius: 14, padding: 16, textAlign: 'center', marginBottom: 12 }}>
-          <div style={{ fontSize: 32, marginBottom: 8 }}>⚠️</div>
-          <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Você ainda não se identificou no clã</div>
-          <div style={{ fontSize: 11, color: 'rgba(240,234,214,0.4)', marginBottom: 14 }}>Vincule seu jogador para ter acesso completo ao app</div>
-          <button onClick={() => router.push('/clan/onboarding')} style={{ background: 'linear-gradient(135deg,#C8973A,#E8B84B)', border: 'none', borderRadius: 12, padding: '12px 24px', fontFamily: 'Cinzel, serif', fontSize: 13, fontWeight: 600, letterSpacing: 1, color: '#080A0F', cursor: 'pointer' }}>
-            IDENTIFICAR MEU JOGADOR
+        <div style={{ background:'linear-gradient(180deg,#fff3e0,#ffe0b8)', border:'2px solid #f97316', borderRadius:14, padding:16, textAlign:'center', boxShadow:'0 3px 0 #c2410c', marginBottom:12 }}>
+          <div style={{ fontSize:32, marginBottom:8 }}>⚠️</div>
+          <div style={{ fontSize:13, fontWeight:900, color:'#7c2d12', marginBottom:4 }}>Você ainda não se identificou no clã</div>
+          <div style={{ fontSize:11, fontWeight:700, color:'#c2410c', marginBottom:14 }}>Vincule seu jogador para ter acesso completo</div>
+          <button onClick={() => router.push('/clan/onboarding')} style={{ background:'linear-gradient(180deg,#FFDF00,#c8960c)', border:'none', borderRadius:12, padding:'12px 24px', fontSize:13, fontWeight:900, color:'#3a1000', cursor:'pointer', boxShadow:'0 3px 0 #805800', textTransform:'uppercase', letterSpacing:'0.5px' }}>
+            Identificar meu jogador
           </button>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12 }}>
-          {players.map(p => (
-            <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(200,151,58,0.15)', borderRadius: 12, padding: '12px 14px' }}>
-              <div style={{ fontSize: 24 }}>⚔️</div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 14, fontWeight: 700 }}>{p.player_name}</div>
-                <div style={{ fontSize: 10, color: 'rgba(240,234,214,0.4)', fontWeight: 500 }}>{roleLabel(p.player_role)} · {p.player_tag}</div>
+        <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:4 }}>
+          {players.map(p => {
+            const pr = roleInfo(p.player_role)
+            return (
+              <div key={p.id} style={{ background:'linear-gradient(180deg,#f0e4cc,#e0d0a8)', border:'2px solid #c8a870', borderRadius:12, padding:'12px 14px', display:'flex', alignItems:'center', gap:12, boxShadow:'0 3px 0 #a07040' }}>
+                <div style={{ fontSize:24 }}>⚔️</div>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontSize:14, fontWeight:900, color:'#1a0800' }}>{p.player_name}</div>
+                  <div style={{ display:'flex', alignItems:'center', gap:5, marginTop:3 }}>
+                    <span style={{ fontSize:8, fontWeight:900, padding:'1px 5px', borderRadius:5, textTransform:'uppercase', background:pr.bg, color:pr.color }}>{pr.label}</span>
+                    <span style={{ fontSize:10, fontWeight:700, color:'#8a6030' }}>{p.player_tag}</span>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
 
       {/* LOGOUT */}
-      <button onClick={handleLogout} style={{ width: '100%', background: 'transparent', border: '1px solid rgba(231,76,60,0.25)', borderRadius: 12, padding: 13, fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 700, color: '#E74C3C', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+      {sectionHdr('')}
+      <button onClick={handleLogout} style={{ width:'100%', background:'linear-gradient(180deg,#f87171,#dc2626)', border:'none', borderRadius:12, padding:13, fontSize:13, fontWeight:900, color:'#fff', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:6, boxShadow:'0 4px 0 #7f1d1d', textTransform:'uppercase', letterSpacing:'0.5px' }}>
         ↩ Sair da conta
       </button>
 
-      {/* TOAST */}
       {toast && (
-        <div style={{ position: 'fixed', top: 20, left: '50%', transform: 'translateX(-50%)', background: '#0f1520', border: '1px solid rgba(200,151,58,0.3)', borderRadius: 20, padding: '10px 20px', fontSize: 12, fontWeight: 700, zIndex: 999, whiteSpace: 'nowrap' }}>
+        <div style={{ position:'fixed', top:20, left:'50%', transform:'translateX(-50%)', background:'linear-gradient(180deg,#f5ead8,#e8d8b8)', border:'2px solid #c8960c', borderRadius:20, padding:'10px 20px', fontSize:12, fontWeight:900, color:'#3a1000', zIndex:999, whiteSpace:'nowrap', boxShadow:'0 4px 0 #a07040' }}>
           {toast}
         </div>
       )}
