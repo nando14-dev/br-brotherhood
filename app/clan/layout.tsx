@@ -7,31 +7,39 @@ import { useRef, useState, useEffect } from 'react'
 import ReleaseNotes from '@/components/ReleaseNotes'
 
 const TABS = [
-  { href: '/clan', label: 'Clã', icon: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="26" height="26">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-    </svg>
-  )},
-  { href: '/clan/streak', label: 'Streak', icon: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="26" height="26">
-      <path d="M12 2c0 0-6 6-6 11a6 6 0 0012 0c0-5-6-11-6-11z"/>
-      <path d="M12 12c0 0-3 2-3 4a3 3 0 006 0c0-2-3-4-3-4z"/>
-    </svg>
-  )},
-  { href: '/clan/guerra', label: 'Guerra', icon: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="26" height="26">
-      <path d="M14.5 17.5L3 6V3h3l11.5 11.5"/>
-      <path d="M13 19l6-6 2 2-1 1"/>
-      <path d="M19 13l2-2-4-4-2 2"/>
-      <path d="M3 21l7-7"/>
-    </svg>
-  ), badge: true },
-  { href: '/clan/comunidade', label: 'Comunidade', icon: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="26" height="26">
-      <circle cx="12" cy="12" r="10"/>
-      <path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/>
-    </svg>
-  )},
+  {
+    href: '/clan', label: 'Clã', icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="26" height="26">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      </svg>
+    )
+  },
+  {
+    href: '/clan/streak', label: 'Streak', icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="26" height="26">
+        <path d="M12 2c0 0-6 6-6 11a6 6 0 0012 0c0-5-6-11-6-11z" />
+        <path d="M12 12c0 0-3 2-3 4a3 3 0 006 0c0-2-3-4-3-4z" />
+      </svg>
+    )
+  },
+  {
+    href: '/clan/guerra', label: 'Guerra', icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="26" height="26">
+        <path d="M14.5 17.5L3 6V3h3l11.5 11.5" />
+        <path d="M13 19l6-6 2 2-1 1" />
+        <path d="M19 13l2-2-4-4-2 2" />
+        <path d="M3 21l7-7" />
+      </svg>
+    ), badge: true
+  },
+  {
+    href: '/clan/comunidade', label: 'Comunidade', icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="26" height="26">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" />
+      </svg>
+    )
+  },
 ]
 
 const HIDE_HEADER = ['/clan/perfil', '/clan/onboarding']
@@ -45,7 +53,7 @@ export default function ClanLayout({ children }: { children: React.ReactNode }) 
   return (
     <div style={{
       maxWidth: 430, margin: '0 auto',
-      minHeight: '100dvh',
+      height: '100dvh',
       background: '#c8b898',
       position: 'relative',
       display: 'flex', flexDirection: 'column',
@@ -61,7 +69,7 @@ export default function ClanLayout({ children }: { children: React.ReactNode }) 
       {!hideHeader && <Header />}
       <ReleaseNotes />
 
-      <div style={{ flex: 1, position: 'relative', zIndex: 1, overflow: 'hidden' }}>
+      <div style={{ flex: 1, position: 'relative', zIndex: 1, overflow: 'hidden', minHeight: 0 }}>
         {children}
       </div>
 
