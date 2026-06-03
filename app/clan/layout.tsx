@@ -4,6 +4,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import EmberBackground from '@/components/EmberBackground'
 import Header from '@/components/Header'
 import { useRef, useState, useEffect } from 'react'
+import ReleaseNotes from '@/components/ReleaseNotes'
 
 const TABS = [
   { href: '/clan', label: 'Clã', icon: (
@@ -58,6 +59,7 @@ export default function ClanLayout({ children }: { children: React.ReactNode }) 
       }} />
 
       {!hideHeader && <Header />}
+      <ReleaseNotes />
 
       <div style={{ flex: 1, position: 'relative', zIndex: 1, overflow: 'hidden' }}>
         {children}
