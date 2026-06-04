@@ -49,6 +49,19 @@ export default function ClanLayout({ children }: { children: React.ReactNode }) 
   const pathname = usePathname()
   const hideHeader = HIDE_HEADER.includes(pathname)
   const currentIdx = TABS.findIndex(t => t.href === pathname)
+  const lastTapRef = useRef<{ href: string; time: number } | null>(null)
+
+  function handleNavTap(href: string) {
+    const now = Date.now()
+    const last = lastTapRef.current
+    if (last && last.href === href && now - last.time < 350) {
+      lastTapRef.current = null
+      router.refresh()
+      return
+    }
+    lastTapRef.current = { href, time: now }
+    router.push(href)
+  }
 
   return (
     <div style={{
@@ -85,7 +98,7 @@ export default function ClanLayout({ children }: { children: React.ReactNode }) 
         {TABS.map((tab, i) => {
           const active = pathname === tab.href
           return (
-            <button key={tab.href} onClick={() => router.push(tab.href)} style={{
+            <button key={tab.href} onClick={() => handleNavTap(tab.href)} style={{
               flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
               cursor: 'pointer', padding: '4px 2px', borderRadius: 12, border: 'none',
               background: 'transparent', gap: 2,

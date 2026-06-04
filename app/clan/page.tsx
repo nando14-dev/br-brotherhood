@@ -72,7 +72,7 @@ export default function ClanPage() {
               <div style={{ fontSize: 11, fontWeight: 700, color: '#5a4020', lineHeight: 1.5 }}>{clan?.description}</div>
             </div>
           </div>
-          <div style={{ background: 'linear-gradient(180deg,#5a3a18,#3a2510)', border: '2px solid #c8960c', borderRadius: 10, display: 'flex', overflow: 'hidden', boxShadow: '0 3px 0 #805800' }}>
+          <div style={{ background: 'linear-gradient(135deg,#7c2d12,#c2410c)', border: '2px solid #f97316', borderRadius: 10, display: 'flex', overflow: 'hidden', boxShadow: '0 3px 0 #5a1a08' }}>
             {[
               { val: clan?.members, label: 'Membros' },
               { val: clan?.warWins, label: 'Vitórias' },
@@ -100,7 +100,7 @@ export default function ClanPage() {
 
         {/* MEMBERS */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '4px 0 8px' }}>
-          <div style={{ fontSize: 12, fontWeight: 900, color: '#3a1000', textTransform: 'uppercase', letterSpacing: '0.5px' }}>👥 Membros — {members.length}/50</div>
+          <div style={{ fontSize: 12, fontWeight: 900, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>👥 Membros — {members.length}/50</div>
           <div style={{ flex: 1, height: 2, background: 'linear-gradient(90deg,#c8960c,transparent)', borderRadius: 1 }} />
         </div>
 
@@ -118,7 +118,7 @@ export default function ClanPage() {
                 boxShadow: isLeader ? '0 3px 0 #805800' : '0 3px 0 #a07040',
               }}>
                 <div style={{ width: 26, height: 26, borderRadius: 7, background: i < 3 ? rankColors[i] : 'linear-gradient(180deg,#888,#666)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 900, color: '#fff', flexShrink: 0, boxShadow: '0 2px 0 rgba(0,0,0,0.3)' }}>{i + 1}</div>
-                <div style={{ width: 42, height: 42, borderRadius: 10, background: 'linear-gradient(135deg,#4a2810,#2a1808)', border: '1px solid #c8a870', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>⚔️</div>
+                <div style={{ width: 42, height: 42, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0 }}>⚔️</div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 900, color: isLeader ? '#5a2a00' : '#1a0800', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.name}</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>

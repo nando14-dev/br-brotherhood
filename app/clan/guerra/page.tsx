@@ -116,7 +116,7 @@ export default function GuerraPage() {
       marginBottom: 6,
       boxShadow: pending ? '0 3px 0 #c2410c' : '0 3px 0 #a07040',
     }}>
-      <div style={{ width: 42, height: 42, borderRadius: 10, background: 'linear-gradient(135deg,#4a2810,#2a1808)', border: '1px solid #c8a870', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>⚔️</div>
+      <div style={{ width: 42, height: 42, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0 }}>⚔️</div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 13, fontWeight: 900, color: '#1a0800' }}>{m.name}</div>
         {pending

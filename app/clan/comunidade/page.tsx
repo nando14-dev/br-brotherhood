@@ -10,7 +10,7 @@ type Tab = 'recrutar' | 'forum' | 'news'
 
 interface Post {
   id: string; title: string; content: string
-  created_at: string; user_id: string
+  created_at: string; user_id: string; pinned: boolean
   profiles: { display_name: string; avatar_emoji: string }
 }
 
@@ -79,9 +79,22 @@ export default function ComunidadePage() {
 
   async function loadPosts() {
     setLoading(true)
-    const { data } = await supabase.from('forum_posts').select('*, profiles(display_name, avatar_emoji)').order('created_at', { ascending: false })
+    const { data } = await supabase
+      .from('forum_posts')
+      .select('*, profiles(display_name, avatar_emoji)')
+      .order('pinned', { ascending: false })
+      .order('created_at', { ascending: false })
     if (data) setPosts(data as any)
     setLoading(false)
+  }
+
+  async function togglePin(p: Post) {
+    if (!p.pinned) {
+      const pinnedCount = posts.filter(x => x.pinned).length
+      if (pinnedCount >= 2) { showToast('⚠️ Máximo de 2 posts pinnados'); return }
+    }
+    await supabase.from('forum_posts').update({ pinned: !p.pinned }).eq('id', p.id)
+    loadPosts()
   }
 
   async function loadNews() {
@@ -260,20 +273,28 @@ export default function ComunidadePage() {
               <div style={{ fontSize: 11, fontWeight: 700, marginTop: 4 }}>Seja o primeiro a postar!</div>
             </div>
           ) : posts.map(p => (
-            <div key={p.id} style={{ background: 'linear-gradient(180deg,#f5ead8,#e8d8b8)', border: '2px solid #c8a870', borderRadius: 14, padding: 14, marginBottom: 8, boxShadow: '0 3px 0 #a07040' }}>
+            <div key={p.id} style={{ background: 'linear-gradient(180deg,#f5ead8,#e8d8b8)', border: '2px solid #c8a870', borderRadius: 14, padding: 14, marginBottom: 8, boxShadow: '0 3px 0 #a07040', position: 'relative' }}>
+              {p.pinned && (
+                <div style={{ position: 'absolute', top: 10, right: 10, fontSize: 16, lineHeight: 1 }}>📌</div>
+              )}
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg,#4a2810,#2a1808)', border: '1px solid #c8a870', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
+                <div style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
                   {p.profiles?.avatar_emoji || '⚔️'}
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 12, fontWeight: 900, color: '#3a1000' }}>{p.profiles?.display_name || 'Membro'}</div>
                   <div style={{ fontSize: 9, fontWeight: 700, color: '#8a6030' }}>{timeAgo(p.created_at)}</div>
                 </div>
-                {(isAdmin || p.user_id === userId) && (
-                  <button onClick={() => deletePost(p.id)} style={{ background: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.3)', borderRadius: 7, padding: '4px 8px', fontSize: 11, color: '#dc2626', cursor: 'pointer', fontWeight: 900 }}>🗑️</button>
-                )}
+                <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                  {isAdmin && (
+                    <button onClick={() => togglePin(p)} style={{ background: p.pinned ? 'rgba(200,150,12,0.15)' : 'rgba(0,0,0,0.06)', border: `1px solid ${p.pinned ? '#c8960c' : 'rgba(0,0,0,0.15)'}`, borderRadius: 7, padding: '4px 7px', fontSize: 13, cursor: 'pointer' }} title={p.pinned ? 'Despinnar' : 'Pinnar'}>📌</button>
+                  )}
+                  {(isAdmin || p.user_id === userId) && (
+                    <button onClick={() => deletePost(p.id)} style={{ background: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.3)', borderRadius: 7, padding: '4px 8px', fontSize: 11, color: '#dc2626', cursor: 'pointer', fontWeight: 900 }}>🗑️</button>
+                  )}
+                </div>
               </div>
-              <div style={{ fontSize: 13, fontWeight: 900, color: '#1a0800', marginBottom: 5, lineHeight: 1.4 }}>{p.title}</div>
+              <div style={{ fontSize: 13, fontWeight: 900, color: '#1a0800', marginBottom: 5, lineHeight: 1.4, paddingRight: p.pinned ? 28 : 0 }}>{p.title}</div>
               <div style={{ fontSize: 11, fontWeight: 700, color: '#5a4020', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.content}</div>
             </div>
           ))}

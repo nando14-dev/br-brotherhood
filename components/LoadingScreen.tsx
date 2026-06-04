@@ -1,16 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-
 export default function LoadingScreen() {
-  const [dots, setDots] = useState('')
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setDots(d => d.length >= 3 ? '' : d + '.')
-    }, 400)
-    return () => clearInterval(interval)
-  }, [])
 
   return (
     <div style={{
@@ -79,15 +69,7 @@ export default function LoadingScreen() {
         ))}
       </div>
 
-      {/* Texto */}
-      <div style={{ textAlign:'center' }}>
-        <div style={{ fontSize:14, fontWeight:900, color:'#3a1000', letterSpacing:'1px', textTransform:'uppercase' }}>
-          Carregando{dots}
-        </div>
-        <div style={{ fontSize:11, fontWeight:700, color:'#8a6030', marginTop:4 }}>BR Brotherhood</div>
-      </div>
-
-      <style>{`
+<style>{`
         @keyframes spin {
           to { transform: rotate(360deg); }
         }
