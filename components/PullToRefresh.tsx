@@ -59,17 +59,35 @@ export default function PullToRefresh({ onRefresh, children }: Props) {
           transition: refreshing ? 'none' : 'height 0.1s',
         }}>
           <div style={{
-            width: 36, height: 36, borderRadius: '50%',
-            background: 'linear-gradient(180deg,#FFDF00,#c8960c)',
-            border: '2px solid #805800',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 3px 0 #805800',
-            transform: `scale(${0.5 + progress * 0.5}) rotate(${progress * 180}deg)`,
-            transition: refreshing ? 'transform 0.3s linear' : 'none',
-            animation: refreshing ? 'spin-refresh 0.8s linear infinite' : 'none',
-            fontSize: 18,
+            position: 'relative', width: 44, height: 44,
+            transform: `scale(${0.4 + progress * 0.6})`,
+            transition: refreshing ? 'none' : 'transform 0.1s',
           }}>
-            {refreshing ? '🔄' : progress >= 1 ? '⬆️' : '⬇️'}
+            {/* Anel dourado */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              borderRadius: '50%',
+              border: '3px solid transparent',
+              borderTopColor: '#c8960c',
+              borderRightColor: '#FFDF00',
+              boxShadow: '0 0 12px rgba(200,150,0,0.35)',
+              transform: refreshing ? undefined : `rotate(${progress * 360}deg)`,
+              animation: refreshing ? 'ptr-spin 0.8s linear infinite' : 'none',
+              transition: refreshing ? 'none' : 'transform 0.1s',
+            }} />
+            {/* Badge central */}
+            <div style={{
+              position: 'absolute', inset: 6,
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg,#1a3060,#3a1060)',
+              border: '2px solid #c8960c',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 14,
+              boxShadow: '0 0 8px rgba(200,150,0,0.2)',
+              animation: refreshing ? 'ptr-pulse 1s ease infinite alternate' : 'none',
+            }}>
+              🇧🇷
+            </div>
           </div>
         </div>
       )}
@@ -90,8 +108,12 @@ export default function PullToRefresh({ onRefresh, children }: Props) {
       </div>
 
       <style>{`
-        @keyframes spin-refresh {
+        @keyframes ptr-spin {
           to { transform: rotate(360deg); }
+        }
+        @keyframes ptr-pulse {
+          from { box-shadow: 0 0 6px rgba(200,150,0,0.2); }
+          to   { box-shadow: 0 0 18px rgba(200,150,0,0.55); }
         }
       `}</style>
     </div>
