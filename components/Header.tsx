@@ -50,10 +50,9 @@ export default function Header() {
         {/* BANDEIRA — easter egg 10 taps */}
         <div
           onClick={handleFlagTap}
-          style={{ width:36, height:36, borderRadius:8, overflow:'hidden', border:'2px solid #c8960c', boxShadow:'0 0 8px rgba(200,150,0,0.4)', flexShrink:0, cursor:'pointer', position:'relative' }}
+          style={{ width:36, height:36, borderRadius:8, overflow:'hidden', border:'2px solid #c8960c', boxShadow:'0 0 8px rgba(200,150,0,0.4)', flexShrink:0, cursor:'pointer' }}
         >
-          <img src="https://flagcdn.com/w40/br.png" alt="BR" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
-          
+          <img src="/dragon.webp" alt="Dragon" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
         </div>
 
         <div style={{ flex:1, minWidth:0 }}>
@@ -66,8 +65,8 @@ export default function Header() {
           <span style={{ fontSize:16, fontWeight:900, color:'#fed7aa', lineHeight:1 }}>{streak}</span>
         </div>
 
-        <div onClick={() => router.push('/clan/perfil')} style={{ width:36, height:36, borderRadius:8, background: getAvatar(avatarId).color, border:'2px solid #c8960c', display:'flex', alignItems:'center', justifyContent:'center', padding:6, cursor:'pointer', flexShrink:0, boxShadow:'0 3px 0 rgba(0,0,0,0.4)' }}>
-          {getAvatar(avatarId).svg}
+        <div onClick={() => router.push('/clan/perfil')} style={{ width:36, height:36, borderRadius:8, overflow:'hidden', border:'2px solid #c8960c', cursor:'pointer', flexShrink:0, boxShadow:'0 3px 0 rgba(0,0,0,0.4)' }}>
+          <img src={getAvatar(avatarId).img} alt="avatar" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
         </div>
       </div>
 

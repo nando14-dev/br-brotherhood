@@ -37,3 +37,22 @@ html, body {
 
 .animate-bounce-in { animation: bounce-in 0.4s cubic-bezier(0.22,1,0.36,1) both; }
 .animate-slide-up  { animation: slide-up 0.3s ease both; }
+
+@media screen and (orientation: landscape) {
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 9999;
+    background: #3a1000;
+    display: flex;
+  }
+  body::after {
+    content: '🔄 Gire o celular para usar o app';
+    position: fixed; inset: 0; z-index: 10000;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Nunito', sans-serif;
+    font-size: 18px; font-weight: 900;
+    color: #FFDF00; text-align: center;
+    padding: 20px;
+    pointer-events: none;
+  }
+}

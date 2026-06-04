@@ -42,14 +42,14 @@ export default function LoadingScreen() {
         <div style={{
           position:'absolute', inset:24,
           borderRadius:'50%',
-          background:'linear-gradient(135deg,#1a3060,#3a1060)',
+          background:'linear-gradient(135deg,#3a1000,#5a2a00)',
           border:'3px solid #c8960c',
           display:'flex', alignItems:'center', justifyContent:'center',
-          fontSize:28,
           boxShadow:'0 4px 12px rgba(0,0,0,0.4), 0 0 20px rgba(200,150,0,0.2)',
           animation:'pulse-badge 1.5s ease infinite alternate',
+          overflow:'hidden', padding:0,
         }}>
-          🇧🇷
+          <img src="/dragon.webp" alt="Dragon" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
         </div>
 
         {/* Partículas orbitando */}

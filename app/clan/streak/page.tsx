@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import LoadingScreen from '@/components/LoadingScreen'
 import PullToRefresh from '@/components/PullToRefresh'
+import { getAvatar } from '@/lib/avatars'
 
 interface StreakUser {
   user_id: string
@@ -199,7 +200,9 @@ export default function StreakPage() {
                 position: 'relative',
               }}>
                 {i === 0 && <div style={{ position:'absolute', top:-6, right:-4, fontSize:14 }}>👑</div>}
-                <div style={{ fontSize:22, marginBottom:4 }}>{s.profiles?.avatar_emoji || '⚔️'}</div>
+                <div style={{ width:32, height:32, borderRadius:8, overflow:'hidden', margin:'0 auto 4px', boxShadow:'0 2px 0 rgba(0,0,0,0.2)' }}>
+                  <img src={getAvatar(s.profiles?.avatar_emoji || 'barbarian').img} alt="avatar" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+                </div>
                 <div style={{ fontSize:10, fontWeight:900, color:'#3a1000', marginBottom:2, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{s.profiles?.display_name || '—'}</div>
                 <div style={{ fontSize:22, fontWeight:900, color: eff === 0 ? '#aaa' : i === 0 ? '#c2410c' : '#8a6030', lineHeight:1 }}>{eff}</div>
                 <div style={{ fontSize:8, fontWeight:800, textTransform:'uppercase', color:'#8a6030' }}>{eff === 0 ? 'zerado' : 'dias'}</div>

@@ -22,8 +22,14 @@ interface WarData {
 interface CWLGroup {
   state: string
   season: string
-  clans: { name: string; tag: string; stars: number }[]
+  clans: { name: string; tag: string }[]
   rounds: { warTags: string[] }[]
+}
+
+interface ClanStanding {
+  tag: string; name: string
+  stars: number; attacks: number; destruction: number
+  wins: number; losses: number; draws: number
 }
 
 export default function GuerraPage() {
@@ -31,6 +37,7 @@ export default function GuerraPage() {
   const [war, setWar] = useState<WarData | null>(null)
   const [cwl, setCwl] = useState<CWLGroup | null>(null)
   const [cwlWar, setCwlWar] = useState<WarData | null>(null)
+  const [standings, setStandings] = useState<ClanStanding[]>([])
   const [nudged, setNudged] = useState<Set<string>>(new Set())
 
   const load = useCallback(async () => {
@@ -46,24 +53,64 @@ export default function GuerraPage() {
       const cwlData = await cwlRes.json()
       if (cwlData.state && cwlData.clans) {
         setCwl(cwlData)
-        const rounds = cwlData.rounds || []
+
+        // Monta mapa de standings inicializado com todos os clãs
+        const sMap: Record<string, ClanStanding> = {}
+        cwlData.clans.forEach((c: any) => {
+          sMap[c.tag] = { tag: c.tag, name: c.name, stars: 0, attacks: 0, destruction: 0, wins: 0, losses: 0, draws: 0 }
+        })
+
+        // Busca todas as guerras de todos os rounds em paralelo
+        const allTags: string[] = (cwlData.rounds || []).flatMap((r: any) =>
+          r.warTags.filter((t: string) => t !== '#0')
+        )
+        const allWars = await Promise.all(
+          allTags.map((tag: string) =>
+            fetch(`${proxy}/clan/cwl/war/${tag.replace('#', '%23')}`).then(r => r.json()).catch(() => null)
+          )
+        )
+
         let foundWar: any = null
-        for (let i = 0; i < rounds.length; i++) {
-          const tags = rounds[i].warTags.filter((t: string) => t !== '#0')
-          for (const tag of tags) {
-            try {
-              const encoded = tag.replace('#', '%23')
-              const wRes = await fetch(`${proxy}/clan/cwl/war/${encoded}`)
-              const wData = await wRes.json()
-              if (wData.clan?.tag === '#P9P2RRG' || wData.opponent?.tag === '#P9P2RRG') {
-                if (wData.opponent?.tag === '#P9P2RRG') { const tmp = wData.clan; wData.clan = wData.opponent; wData.opponent = tmp }
-                if (!foundWar) foundWar = wData
-                else if (wData.state === 'inWar') foundWar = wData
-                else if (wData.state === 'warEnded' && foundWar.state !== 'inWar') foundWar = wData
+        for (const wData of allWars) {
+          if (!wData || !wData.clan || wData.state === 'notInWar') continue
+
+          const processside = (side: any, other: any) => {
+            if (!sMap[side.tag]) return
+            sMap[side.tag].stars += side.stars || 0
+            sMap[side.tag].attacks += side.attacks || 0
+            // Soma destruição ataque por ataque (igual ao jogo)
+            if (side.members) {
+              for (const member of side.members) {
+                for (const atk of (member.attacks || [])) {
+                  sMap[side.tag].destruction += atk.destructionPercentage || 0
+                }
               }
-            } catch (e) { console.error(e) }
+            } else {
+              sMap[side.tag].destruction += side.destructionPercentage || 0
+            }
+            if (wData.state === 'warEnded') {
+              if (side.stars > other.stars) sMap[side.tag].wins++
+              else if (side.stars < other.stars) sMap[side.tag].losses++
+              else sMap[side.tag].draws++
+            }
+          }
+          processside(wData.clan, wData.opponent)
+          processside(wData.opponent, wData.clan)
+
+          // Encontra guerra atual do BR Brotherhood
+          if (wData.clan?.tag === '#P9P2RRG' || wData.opponent?.tag === '#P9P2RRG') {
+            if (wData.opponent?.tag === '#P9P2RRG') { const tmp = wData.clan; wData.clan = wData.opponent; wData.opponent = tmp }
+            if (!foundWar) foundWar = wData
+            else if (wData.state === 'inWar') foundWar = wData
+            else if (wData.state === 'warEnded' && foundWar.state !== 'inWar') foundWar = wData
           }
         }
+
+        // Ordena: estrelas desc → destruição desc (igual ao jogo)
+        const sorted = Object.values(sMap).sort((a, b) =>
+          b.stars !== a.stars ? b.stars - a.stars : b.destruction - a.destruction
+        )
+        setStandings(sorted)
         if (foundWar) setCwlWar(foundWar)
         setMode('cwl'); return
       }
@@ -204,17 +251,33 @@ export default function GuerraPage() {
         </>}
 
         {sectionHdr('🏆 Classificação')}
-        {cwl?.clans.sort((a, b) => (b.stars || 0) - (a.stars || 0)).map((c, i) => (
-          <div key={c.tag} style={{ background: c.tag === '#P9P2RRG' ? 'linear-gradient(180deg,#fff8d0,#f5e070)' : 'linear-gradient(180deg,#f0e4cc,#e0d0a8)', border: `2px solid ${c.tag === '#P9P2RRG' ? '#c8960c' : '#c0a060'}`, borderRadius: 12, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6, boxShadow: c.tag === '#P9P2RRG' ? '0 3px 0 #805800' : '0 3px 0 #a07040' }}>
-            <div style={{ fontSize: 16, fontWeight: 900, color: i < 3 ? '#c8960c' : '#8a6030', width: 24, textAlign: 'center' }}>{i + 1}</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, fontWeight: 900, color: '#1a0800' }}>{c.name} {c.tag === '#P9P2RRG' ? '🇧🇷' : ''}</div>
+        {standings.map((c, i) => {
+          const isBR = c.tag === '#P9P2RRG'
+          const medalColors = ['#e87030', '#9090b0', '#c09050']
+          return (
+            <div key={c.tag} style={{ background: isBR ? 'linear-gradient(180deg,#fff8d0,#f5e070)' : 'linear-gradient(180deg,#f0e4cc,#e0d0a8)', border: `2px solid ${isBR ? '#c8960c' : '#c0a060'}`, borderRadius: 12, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6, boxShadow: isBR ? '0 3px 0 #805800' : '0 3px 0 #a07040' }}>
+              <div style={{ width: 24, height: 24, borderRadius: 6, background: i < 3 ? medalColors[i] : 'rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 900, color: i < 3 ? '#fff' : '#8a6030', flexShrink: 0 }}>{i + 1}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 900, color: '#1a0800', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.name}{isBR ? ' 🇧🇷' : ''}</div>
+                <div style={{ fontSize: 9, fontWeight: 800, color: '#8a6030', marginTop: 2 }}>
+                  {c.wins}V {c.losses}D{c.draws > 0 ? ` ${c.draws}E` : ''}
+                </div>
+              </div>
+              {/* Estrelas */}
+              <div style={{ textAlign: 'center', flexShrink: 0, minWidth: 52 }}>
+                <div style={{ fontSize: 8, fontWeight: 900, color: '#8a6030', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 2 }}>Estrelas</div>
+                <div style={{ fontSize: 15, fontWeight: 900, color: isBR ? '#805800' : '#c8960c', lineHeight: 1 }}>{c.stars > 0 ? c.stars : '—'} ⭐</div>
+              </div>
+              {/* Separador */}
+              <div style={{ width: 1, height: 28, background: 'rgba(160,112,64,0.3)', flexShrink: 0 }} />
+              {/* Destruição */}
+              <div style={{ textAlign: 'center', flexShrink: 0, minWidth: 48 }}>
+                <div style={{ fontSize: 8, fontWeight: 900, color: '#8a6030', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 2 }}>Destruição</div>
+                <div style={{ fontSize: 13, fontWeight: 900, color: '#5a4020', lineHeight: 1 }}>{Math.round(c.destruction)}</div>
+              </div>
             </div>
-            <div style={{ fontSize: 15, fontWeight: 900, color: '#c8960c' }}>
-              {c.stars > 0 ? `${c.stars}⭐` : '—'}
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </PullToRefresh>
   )

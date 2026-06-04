@@ -100,8 +100,8 @@ export default function PerfilPage() {
 
         {/* Avatar + Nome */}
         <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:16 }}>
-          <div style={{ width:60, height:60, borderRadius:14, background:currentAvatar.color, display:'flex', alignItems:'center', justifyContent:'center', padding:10, flexShrink:0, boxShadow:'0 4px 0 rgba(0,0,0,0.3)' }}>
-            {currentAvatar.svg}
+          <div style={{ width:60, height:60, borderRadius:14, overflow:'hidden', flexShrink:0, boxShadow:'0 4px 0 rgba(0,0,0,0.3)' }}>
+            <img src={currentAvatar.img} alt={currentAvatar.label} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
           </div>
           <div style={{ flex:1, minWidth:0 }}>
             {editingName ? (
@@ -135,17 +135,15 @@ export default function PerfilPage() {
         <div style={{ display:'grid', gridTemplateColumns:'repeat(5, 1fr)', gap:8 }}>
           {AVATARS.map(a => (
             <div key={a.id} onClick={() => saveAvatar(a.id)} style={{
-              aspectRatio: '1', borderRadius:12,
-              background: a.color,
+              aspectRatio: '1', borderRadius:12, overflow:'hidden',
               border: `3px solid ${avatarId === a.id ? '#FFDF00' : 'transparent'}`,
-              display:'flex', alignItems:'center', justifyContent:'center',
-              padding: 8, cursor:'pointer',
+              cursor:'pointer',
               boxShadow: avatarId === a.id ? '0 0 0 1px #805800, 0 3px 0 rgba(0,0,0,0.3)' : '0 3px 0 rgba(0,0,0,0.2)',
               opacity: avatarId === a.id ? 1 : 0.7,
               transition: 'all 0.15s',
               transform: avatarId === a.id ? 'scale(1.08)' : 'scale(1)',
             }}>
-              {a.svg}
+              <img src={a.img} alt={a.label} style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} />
             </div>
           ))}
         </div>
@@ -168,8 +166,8 @@ export default function PerfilPage() {
             const pr = roleInfo(p.player_role)
             return (
               <div key={p.id} style={{ background:'linear-gradient(180deg,#f0e4cc,#e0d0a8)', border:'2px solid #c8a870', borderRadius:12, padding:'12px 14px', display:'flex', alignItems:'center', gap:12, boxShadow:'0 3px 0 #a07040' }}>
-                <div style={{ width:36, height:36, borderRadius:10, background:currentAvatar.color, display:'flex', alignItems:'center', justifyContent:'center', padding:6, flexShrink:0, boxShadow:'0 2px 0 rgba(0,0,0,0.25)' }}>
-                  {currentAvatar.svg}
+                <div style={{ width:36, height:36, borderRadius:10, overflow:'hidden', flexShrink:0, boxShadow:'0 2px 0 rgba(0,0,0,0.25)' }}>
+                  <img src={currentAvatar.img} alt={currentAvatar.label} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
                 </div>
                 <div style={{ flex:1 }}>
                   <div style={{ fontSize:14, fontWeight:900, color:'#1a0800' }}>{p.player_name}</div>
