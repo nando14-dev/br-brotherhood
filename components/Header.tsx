@@ -65,7 +65,7 @@ export default function Header() {
           <span style={{ fontSize:16, fontWeight:900, color:'#fed7aa', lineHeight:1 }}>{streak}</span>
         </div>
 
-        <div onClick={() => router.push('/clan/perfil')} style={{ width:36, height:36, borderRadius:8, background:'linear-gradient(135deg,#1a3a6a,#2a1a5a)', border:'2px solid #c8960c', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, cursor:'pointer', flexShrink:0, boxShadow:'0 3px 0 rgba(0,0,0,0.4)' }}>
+        <div onClick={() => router.push('/clan/perfil')} style={{ width:36, height:36, borderRadius:8, background:'linear-gradient(135deg,#4a2810,#2a1808)', border:'2px solid #c8960c', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, cursor:'pointer', flexShrink:0, boxShadow:'0 3px 0 rgba(0,0,0,0.4)' }}>
           {avatar}
         </div>
       </div>

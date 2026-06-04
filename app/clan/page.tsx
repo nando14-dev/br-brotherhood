@@ -20,7 +20,7 @@ function roleInfo(role: string) {
   const map: Record<string, { label: string; bg: string; color: string }> = {
     leader: { label: 'Líder', bg: '#FFDF00', color: '#3a1000' },
     coLeader: { label: 'Co-Líder', bg: '#f97316', color: '#fff' },
-    admin: { label: 'Ancião', bg: '#3b82f6', color: '#fff' },
+    admin: { label: 'Ancião', bg: '#7a5020', color: '#fff' },
     member: { label: 'Membro', bg: '#888', color: '#fff' },
   }
   return map[role] || { label: role, bg: '#888', color: '#fff' }
@@ -72,7 +72,7 @@ export default function ClanPage() {
               <div style={{ fontSize: 11, fontWeight: 700, color: '#5a4020', lineHeight: 1.5 }}>{clan?.description}</div>
             </div>
           </div>
-          <div style={{ background: 'linear-gradient(180deg,#3a8fd4,#1a5fa8)', border: '2px solid #1a4a80', borderRadius: 10, display: 'flex', overflow: 'hidden', boxShadow: '0 3px 0 #0a2a50' }}>
+          <div style={{ background: 'linear-gradient(180deg,#5a3a18,#3a2510)', border: '2px solid #c8960c', borderRadius: 10, display: 'flex', overflow: 'hidden', boxShadow: '0 3px 0 #805800' }}>
             {[
               { val: clan?.members, label: 'Membros' },
               { val: clan?.warWins, label: 'Vitórias' },
@@ -88,14 +88,14 @@ export default function ClanPage() {
         </div>
 
         {/* PRIZE */}
-        <div style={{ background: 'linear-gradient(135deg,#1a0a3e,#2d1060)', border: '2px solid #9333ea', borderRadius: 14, padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10, boxShadow: '0 4px 0 #4a0a80' }}>
+        <div style={{ background: 'linear-gradient(180deg,#f5ead8,#e8d8b8)', border: '2px solid #c8a870', borderRadius: 14, padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10, boxShadow: '0 4px 0 #a07040' }}>
           <div style={{ fontSize: 36, flexShrink: 0 }}>🎫</div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 8, fontWeight: 900, color: '#c084fc', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 2 }}>🏅 Prêmio do mês</div>
-            <div style={{ fontSize: 16, fontWeight: 900, color: '#fff', marginBottom: 2 }}>Season Pass</div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.55)' }}>Melhor do mês leva o passe pago pelo clã!</div>
+            <div style={{ fontSize: 8, fontWeight: 900, color: '#8a6030', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 2 }}>Prêmio do mês</div>
+            <div style={{ fontSize: 16, fontWeight: 900, color: '#1a0800', marginBottom: 2 }}>Season Pass</div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#5a4020' }}>Melhor do mês leva o passe pago pelo clã!</div>
           </div>
-          <div style={{ background: 'rgba(255,107,26,0.15)', border: '1.5px solid rgba(255,107,26,0.4)', borderRadius: 20, padding: '4px 10px', fontSize: 9, fontWeight: 900, color: '#FF9A3C', textTransform: 'uppercase', flexShrink: 0 }}>🚧 Em breve</div>
+          <div style={{ background: 'rgba(160,112,64,0.15)', border: '1.5px solid #c8a870', borderRadius: 20, padding: '4px 10px', fontSize: 9, fontWeight: 900, color: '#8a6030', textTransform: 'uppercase', flexShrink: 0 }}>Em breve</div>
         </div>
 
         {/* MEMBERS */}
@@ -118,7 +118,7 @@ export default function ClanPage() {
                 boxShadow: isLeader ? '0 3px 0 #805800' : '0 3px 0 #a07040',
               }}>
                 <div style={{ width: 26, height: 26, borderRadius: 7, background: i < 3 ? rankColors[i] : 'linear-gradient(180deg,#888,#666)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 900, color: '#fff', flexShrink: 0, boxShadow: '0 2px 0 rgba(0,0,0,0.3)' }}>{i + 1}</div>
-                <div style={{ width: 42, height: 42, borderRadius: 10, background: 'linear-gradient(135deg,#2a4a8a,#4a2a8a)', border: '2px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>⚔️</div>
+                <div style={{ width: 42, height: 42, borderRadius: 10, background: 'linear-gradient(135deg,#4a2810,#2a1808)', border: '1px solid #c8a870', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>⚔️</div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 900, color: isLeader ? '#5a2a00' : '#1a0800', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.name}</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>

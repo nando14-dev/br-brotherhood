@@ -26,7 +26,7 @@ export default function PerfilPage() {
     const map: Record<string, { label: string; bg: string; color: string }> = {
       leader:   { label: 'Líder',    bg: '#FFDF00', color: '#3a1000' },
       coLeader: { label: 'Co-Líder', bg: '#f97316', color: '#fff' },
-      admin:    { label: 'Ancião',   bg: '#3b82f6', color: '#fff' },
+      admin:    { label: 'Ancião',   bg: '#7a5020', color: '#fff' },
       member:   { label: 'Membro',   bg: '#888',    color: '#fff' },
     }
     return map[role] || { label: role, bg: '#888', color: '#fff' }
@@ -96,7 +96,7 @@ export default function PerfilPage() {
 
         {/* Avatar + Nome */}
         <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:16 }}>
-          <div style={{ width:60, height:60, borderRadius:14, background:'linear-gradient(135deg,#2a4a8a,#4a2a8a)', border:'3px solid #c8960c', display:'flex', alignItems:'center', justifyContent:'center', fontSize:30, flexShrink:0, boxShadow:'0 4px 0 #805800' }}>
+          <div style={{ width:60, height:60, borderRadius:14, background:'linear-gradient(135deg,#4a2810,#2a1808)', border:'3px solid #c8960c', display:'flex', alignItems:'center', justifyContent:'center', fontSize:30, flexShrink:0, boxShadow:'0 4px 0 #805800' }}>
             {avatar}
           </div>
           <div style={{ flex:1, minWidth:0 }}>

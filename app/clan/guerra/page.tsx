@@ -116,7 +116,7 @@ export default function GuerraPage() {
       marginBottom: 6,
       boxShadow: pending ? '0 3px 0 #c2410c' : '0 3px 0 #a07040',
     }}>
-      <div style={{ width: 42, height: 42, borderRadius: 10, background: 'linear-gradient(135deg,#2a4a8a,#4a2a8a)', border: '2px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>⚔️</div>
+      <div style={{ width: 42, height: 42, borderRadius: 10, background: 'linear-gradient(135deg,#4a2810,#2a1808)', border: '1px solid #c8a870', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>⚔️</div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 13, fontWeight: 900, color: '#1a0800' }}>{m.name}</div>
         {pending
@@ -137,28 +137,28 @@ export default function GuerraPage() {
   const warHero = (w: WarData, isCwl = false) => {
     const barWidth = Math.round((w.clan.stars / Math.max(w.clan.stars + w.opponent.stars, 1)) * 100)
     return (
-      <div style={{ background: 'linear-gradient(180deg,#1a3060,#0f1e40)', border: '2px solid #c8960c', borderRadius: 14, padding: 14, marginBottom: 10, boxShadow: '0 4px 0 #805800', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', right: -10, bottom: -10, fontSize: 80, opacity: 0.05 }}>⚔️</div>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(231,76,60,0.2)', border: '1.5px solid #E74C3C', borderRadius: 20, padding: '3px 10px', fontSize: 9, fontWeight: 900, color: '#E74C3C', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 12 }}>
+      <div style={{ background: 'linear-gradient(180deg,#f5ead8,#e8d8b8)', border: '2px solid #c8a870', borderRadius: 14, padding: 14, marginBottom: 10, boxShadow: '0 4px 0 #a07040', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', right: -10, bottom: -10, fontSize: 80, opacity: 0.06 }}>⚔️</div>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(231,76,60,0.12)', border: '1.5px solid #E74C3C', borderRadius: 20, padding: '3px 10px', fontSize: 9, fontWeight: 900, color: '#c0392b', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 12 }}>
           <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#E74C3C', animation: 'blink 1s infinite' }} />
           {w.state === 'inWar' ? 'AO VIVO' : w.state === 'preparation' ? 'PREPARAÇÃO' : 'ENCERRADA'}
           {isCwl && ' · CWL'}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
           <div style={{ textAlign: 'center', flex: 1 }}>
-            <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.5)', marginBottom: 4, textTransform: 'uppercase' }}>🇧🇷 {w.clan.name}</div>
-            <div style={{ fontSize: 40, fontWeight: 900, color: '#FFDF00', textShadow: '0 0 16px rgba(255,223,0,0.4)' }}>{w.clan.stars}⭐</div>
+            <div style={{ fontSize: 10, fontWeight: 800, color: '#8a6030', marginBottom: 4, textTransform: 'uppercase' }}>🇧🇷 {w.clan.name}</div>
+            <div style={{ fontSize: 26, fontWeight: 900, color: '#805800' }}>{w.clan.stars}⭐</div>
           </div>
-          <div style={{ fontSize: 18, fontWeight: 900, color: 'rgba(255,255,255,0.2)', letterSpacing: 2 }}>VS</div>
+          <div style={{ fontSize: 18, fontWeight: 900, color: '#c0a060', letterSpacing: 2 }}>VS</div>
           <div style={{ textAlign: 'center', flex: 1 }}>
-            <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.5)', marginBottom: 4, textTransform: 'uppercase' }}>{w.opponent.name}</div>
-            <div style={{ fontSize: 40, fontWeight: 900, color: '#4a5a6a' }}>{w.opponent.stars}⭐</div>
+            <div style={{ fontSize: 10, fontWeight: 800, color: '#8a6030', marginBottom: 4, textTransform: 'uppercase' }}>{w.opponent.name}</div>
+            <div style={{ fontSize: 26, fontWeight: 900, color: '#8a6030' }}>{w.opponent.stars}⭐</div>
           </div>
         </div>
-        <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 20, height: 8, overflow: 'hidden', marginBottom: 6 }}>
-          <div style={{ height: '100%', background: 'linear-gradient(90deg,#FFDF00,#f97316)', borderRadius: 20, width: `${barWidth}%`, boxShadow: '0 0 8px rgba(255,200,0,0.5)' }} />
+        <div style={{ background: 'rgba(0,0,0,0.1)', borderRadius: 20, height: 8, overflow: 'hidden', marginBottom: 6 }}>
+          <div style={{ height: '100%', background: 'linear-gradient(90deg,#c8960c,#f97316)', borderRadius: 20, width: `${barWidth}%` }} />
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.4)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, fontWeight: 800, color: '#8a6030' }}>
           <span>{w.clan.attacks}/{w.teamSize * (isCwl ? 1 : 2)} ataques</span>
           <span>⏱ {w.state === 'inWar' ? timeLeft(w.endTime) : '—'}</span>
           <span>{w.opponent.attacks}/{w.teamSize * (isCwl ? 1 : 2)} ataques</span>
@@ -181,13 +181,13 @@ export default function GuerraPage() {
   if (mode === 'cwl') return (
     <PullToRefresh onRefresh={load}>
       <div style={{ padding: '10px 10px 20px' }}>
-        <div style={{ background: 'linear-gradient(135deg,#1a0a3e,#2d1060)', border: '2px solid #9333ea', borderRadius: 14, padding: '12px 14px', marginBottom: 10, boxShadow: '0 4px 0 #4a0a80' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(124,58,237,0.2)', border: '1px solid #7c3aed', borderRadius: 20, padding: '3px 10px', fontSize: 9, fontWeight: 900, color: '#a78bfa', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
-            <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#a78bfa', animation: 'blink 1s infinite' }} />
+        <div style={{ background: 'linear-gradient(180deg,#f5ead8,#e8d8b8)', border: '2px solid #c8a870', borderRadius: 14, padding: '12px 14px', marginBottom: 10, boxShadow: '0 4px 0 #a07040' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(200,150,12,0.15)', border: '1px solid #c8960c', borderRadius: 20, padding: '3px 10px', fontSize: 9, fontWeight: 900, color: '#805800', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
+            <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#c8960c', animation: 'blink 1s infinite' }} />
             Liga de Guerra de Clãs
           </div>
-          <div style={{ fontSize: 18, fontWeight: 900, color: '#fff', marginBottom: 2 }}>Temporada {cwl?.season}</div>
-          <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)' }}>{cwl?.clans.length} clãs participando</div>
+          <div style={{ fontSize: 18, fontWeight: 900, color: '#1a0800', marginBottom: 2 }}>Temporada {cwl?.season}</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#8a6030' }}>{cwl?.clans.length} clãs participando</div>
         </div>
 
         {cwlWar && cwlWar.state !== 'notInWar' && <>

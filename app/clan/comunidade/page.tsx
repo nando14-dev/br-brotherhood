@@ -187,8 +187,8 @@ export default function ComunidadePage() {
           <button key={t} onClick={() => setTab(t)} style={{
             flex: 1, padding: '10px 4px', textAlign: 'center',
             fontSize: 10, fontWeight: 900, cursor: 'pointer',
-            background: tab === t ? 'linear-gradient(180deg,#3a8fd4,#1a5fa8)' : 'linear-gradient(180deg,#e8d8b8,#d8c8a0)',
-            color: tab === t ? '#fff' : '#8a6030',
+            background: tab === t ? 'linear-gradient(180deg,#FFDF00,#c8960c)' : 'linear-gradient(180deg,#e8d8b8,#d8c8a0)',
+            color: tab === t ? '#3a1000' : '#8a6030',
             borderRight: i < 2 ? '1px solid #c0a060' : 'none',
             border: 'none', textTransform: 'uppercase', letterSpacing: '0.3px',
             transition: 'all 0.15s',
@@ -262,7 +262,7 @@ export default function ComunidadePage() {
           ) : posts.map(p => (
             <div key={p.id} style={{ background: 'linear-gradient(180deg,#f5ead8,#e8d8b8)', border: '2px solid #c8a870', borderRadius: 14, padding: 14, marginBottom: 8, boxShadow: '0 3px 0 #a07040' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg,#2a4a8a,#4a2a8a)', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
+                <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg,#4a2810,#2a1808)', border: '1px solid #c8a870', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
                   {p.profiles?.avatar_emoji || '⚔️'}
                 </div>
                 <div style={{ flex: 1 }}>
