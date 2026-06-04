@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import LoadingScreen from '@/components/LoadingScreen'
 import ReleaseNotes from '@/components/ReleaseNotes'
+import PullToRefresh from '@/components/PullToRefresh'
 
 type Tab = 'recrutar' | 'forum' | 'news'
 
@@ -40,6 +41,11 @@ export default function ComunidadePage() {
   const supabase = createClient()
 
   const isAdmin = clanRole === 'leader' || clanRole === 'coLeader'
+
+  async function handleRefresh() {
+    if (tab === 'forum') await loadPosts()
+    else if (tab === 'news') await loadNews()
+  }
 
   function showToast(msg: string) { setToast(msg); setTimeout(() => setToast(''), 2500) }
 
@@ -145,7 +151,8 @@ export default function ComunidadePage() {
   )
 
   return (
-    <div style={{ overflowY: 'auto', height: '100%', padding: '10px 10px 20px', position: 'relative' }}>
+    <PullToRefresh onRefresh={handleRefresh}>
+    <div style={{ padding: '10px 10px 20px', position: 'relative' }}>
 
       {/* EASTER EGG — bandeirinha invisível no canto */}
       <div
@@ -327,5 +334,6 @@ export default function ComunidadePage() {
         </div>
       )}
     </div>
+    </PullToRefresh>
   )
 }
