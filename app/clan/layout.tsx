@@ -50,17 +50,34 @@ export default function ClanLayout({ children }: { children: React.ReactNode }) 
   const hideHeader = HIDE_HEADER.includes(pathname)
   const currentIdx = TABS.findIndex(t => t.href === pathname)
   const lastTapRef = useRef<{ href: string; time: number } | null>(null)
+  const [achBadge, setAchBadge] = useState(0)
+
+  useEffect(() => {
+    function sync() {
+      setAchBadge(parseInt(localStorage.getItem('brb_ach_badge') || '0'))
+    }
+    sync()
+    window.addEventListener('achievement-badge-update', sync)
+    return () => window.removeEventListener('achievement-badge-update', sync)
+  }, [])
+
+  useEffect(() => {
+    if (pathname === '/clan/streak') {
+      localStorage.setItem('brb_ach_badge', '0')
+      setAchBadge(0)
+    }
+  }, [pathname])
 
   function handleNavTap(href: string) {
     const now = Date.now()
     const last = lastTapRef.current
-    if (last && last.href === href && now - last.time < 350) {
+    if (last && last.href === href && now - last.time < 600) {
       lastTapRef.current = null
-      router.refresh()
+      window.dispatchEvent(new Event('page-refresh'))
       return
     }
     lastTapRef.current = { href, time: now }
-    router.push(href)
+    if (pathname !== href) router.push(href)
   }
 
   return (
@@ -98,10 +115,10 @@ export default function ClanLayout({ children }: { children: React.ReactNode }) 
         {TABS.map((tab, i) => {
           const active = pathname === tab.href
           return (
-            <button key={tab.href} onClick={() => handleNavTap(tab.href)} style={{
+            <button key={tab.href} onPointerDown={() => handleNavTap(tab.href)} style={{
               flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
               cursor: 'pointer', padding: '4px 2px', borderRadius: 12, border: 'none',
-              background: 'transparent', gap: 2,
+              background: 'transparent', gap: 2, touchAction: 'manipulation',
               transform: active ? 'scale(1.08)' : 'scale(0.82)',
               opacity: active ? 1 : 0.5,
               transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
@@ -125,6 +142,15 @@ export default function ClanLayout({ children }: { children: React.ReactNode }) 
                     fontSize: 7, fontWeight: 900, color: '#fff',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>3</div>
+                )}
+                {tab.href === '/clan/streak' && achBadge > 0 && (
+                  <div style={{
+                    position: 'absolute', top: -2, right: -2,
+                    width: 15, height: 15, borderRadius: '50%',
+                    background: '#c8960c', border: '2px solid #0d0702',
+                    fontSize: 7, fontWeight: 900, color: '#3a1000',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>{achBadge}</div>
                 )}
               </div>
               <span style={{

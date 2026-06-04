@@ -55,8 +55,16 @@ export default function ComunidadePage() {
     if (next >= 10) {
       setShowRelease(true)
       setFlagTaps(0)
+      if (typeof window !== 'undefined') {
+        const seen: string[] = JSON.parse(localStorage.getItem('brb_seen_ach') || '[]')
+        localStorage.setItem('found_flag', 'true')
+        if (!seen.includes('historian')) {
+          const count = parseInt(localStorage.getItem('brb_ach_badge') || '0') + 1
+          localStorage.setItem('brb_ach_badge', String(count))
+          window.dispatchEvent(new Event('achievement-badge-update'))
+        }
+      }
     } else {
-      // Reset após 3 segundos sem tocar
       setTimeout(() => setFlagTaps(0), 3000)
     }
   }
@@ -75,6 +83,16 @@ export default function ComunidadePage() {
   useEffect(() => {
     if (tab === 'forum') loadPosts()
     if (tab === 'news') loadNews()
+  }, [tab])
+
+  useEffect(() => {
+    function onRefresh() {
+      if (tab === 'forum') loadPosts()
+      else if (tab === 'news') loadNews()
+      else { setLoading(true); setTimeout(() => setLoading(false), 400) }
+    }
+    window.addEventListener('page-refresh', onRefresh)
+    return () => window.removeEventListener('page-refresh', onRefresh)
   }, [tab])
 
   async function loadPosts() {

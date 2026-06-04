@@ -74,7 +74,15 @@ export default function ReleaseNotes({ forceOpen = false, onClose }: { forceOpen
             .order('created_at', { ascending: false })
         if (data) setHistory(data)
         setShowHistory(true)
-        if (typeof window !== 'undefined') localStorage.setItem('found_history', 'true')
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('found_history', 'true')
+            const seen: string[] = JSON.parse(localStorage.getItem('brb_seen_ach') || '[]')
+            if (!seen.includes('historian')) {
+                const count = parseInt(localStorage.getItem('brb_ach_badge') || '0') + 1
+                localStorage.setItem('brb_ach_badge', String(count))
+                window.dispatchEvent(new Event('achievement-badge-update'))
+            }
+        }
     }
 
     async function dismiss() {

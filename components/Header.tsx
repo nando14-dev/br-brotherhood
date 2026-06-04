@@ -4,10 +4,11 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { useEffect, useState } from 'react'
 import ReleaseNotes from '@/components/ReleaseNotes'
+import { getAvatar } from '@/lib/avatars'
 
 export default function Header() {
   const [streak, setStreak] = useState(0)
-  const [avatar, setAvatar] = useState('⚔️')
+  const [avatarId, setAvatarId] = useState('warrior')
   const [flagTaps, setFlagTaps] = useState(0)
   const [showRelease, setShowRelease] = useState(false)
   const router = useRouter()
@@ -29,7 +30,7 @@ export default function Header() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
       const { data: profile } = await supabase.from('profiles').select('avatar_emoji').eq('id', user.id).single()
-      if (profile?.avatar_emoji) setAvatar(profile.avatar_emoji)
+      if (profile?.avatar_emoji) setAvatarId(profile.avatar_emoji)
       const { data: s } = await supabase.from('streaks').select('current_streak').eq('user_id', user.id).single()
       if (s?.current_streak) setStreak(s.current_streak)
     }
@@ -65,8 +66,8 @@ export default function Header() {
           <span style={{ fontSize:16, fontWeight:900, color:'#fed7aa', lineHeight:1 }}>{streak}</span>
         </div>
 
-        <div onClick={() => router.push('/clan/perfil')} style={{ width:36, height:36, borderRadius:8, background:'linear-gradient(135deg,#4a2810,#2a1808)', border:'2px solid #c8960c', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, cursor:'pointer', flexShrink:0, boxShadow:'0 3px 0 rgba(0,0,0,0.4)' }}>
-          {avatar}
+        <div onClick={() => router.push('/clan/perfil')} style={{ width:36, height:36, borderRadius:8, background: getAvatar(avatarId).color, border:'2px solid #c8960c', display:'flex', alignItems:'center', justifyContent:'center', padding:6, cursor:'pointer', flexShrink:0, boxShadow:'0 3px 0 rgba(0,0,0,0.4)' }}>
+          {getAvatar(avatarId).svg}
         </div>
       </div>
 

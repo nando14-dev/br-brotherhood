@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import LoadingScreen from '@/components/LoadingScreen'
+import { AVATARS, getAvatar } from '@/lib/avatars'
 
-const EMOJIS = ['⚔️','🐲','🐸','🔥','👑','🛡️','💀','⚡','🏹','🗡️']
-
+// ── Página ────────────────────────────────────────────────────────────────────
 export default function PerfilPage() {
-  const [avatar, setAvatar] = useState('⚔️')
+  const [avatarId, setAvatarId] = useState('warrior')
   const [displayName, setDisplayName] = useState('')
   const [editingName, setEditingName] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -42,7 +42,10 @@ export default function PerfilPage() {
         .from('profiles').select('avatar_emoji, display_name, clan_role')
         .eq('id', user.id).single()
 
-      if (profile?.avatar_emoji) setAvatar(profile.avatar_emoji)
+      // avatar_emoji agora guarda o id do avatar; fallback para 'warrior'
+      if (profile?.avatar_emoji && AVATARS.find(a => a.id === profile.avatar_emoji)) {
+        setAvatarId(profile.avatar_emoji)
+      }
       if (profile?.clan_role) setClanRole(profile.clan_role)
       setDisplayName(profile?.display_name || user.email?.split('@')[0] || '')
 
@@ -53,11 +56,11 @@ export default function PerfilPage() {
     load()
   }, [])
 
-  async function saveAvatar(emoji: string) {
-    setAvatar(emoji)
+  async function saveAvatar(id: string) {
+    setAvatarId(id)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
-    await supabase.from('profiles').update({ avatar_emoji: emoji }).eq('id', user.id)
+    await supabase.from('profiles').update({ avatar_emoji: id }).eq('id', user.id)
     showToast('✦ Avatar atualizado!')
   }
 
@@ -80,10 +83,11 @@ export default function PerfilPage() {
   if (loading) return <LoadingScreen />
 
   const role = roleInfo(clanRole)
+  const currentAvatar = getAvatar(avatarId)
 
   const sectionHdr = (title: string) => (
     <div style={{ display:'flex', alignItems:'center', gap:8, margin:'16px 0 8px' }}>
-      <div style={{ fontSize:12, fontWeight:900, color:'#3a1000', textTransform:'uppercase', letterSpacing:'0.5px' }}>{title}</div>
+      <div style={{ fontSize:12, fontWeight:900, color:'#fff', textTransform:'uppercase', letterSpacing:'0.5px', textShadow:'0 1px 3px rgba(0,0,0,0.5)' }}>{title}</div>
       <div style={{ flex:1, height:2, background:'linear-gradient(90deg,#c8960c,transparent)', borderRadius:1 }} />
     </div>
   )
@@ -96,8 +100,8 @@ export default function PerfilPage() {
 
         {/* Avatar + Nome */}
         <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:16 }}>
-          <div style={{ width:60, height:60, borderRadius:14, background:'linear-gradient(135deg,#4a2810,#2a1808)', border:'3px solid #c8960c', display:'flex', alignItems:'center', justifyContent:'center', fontSize:30, flexShrink:0, boxShadow:'0 4px 0 #805800' }}>
-            {avatar}
+          <div style={{ width:60, height:60, borderRadius:14, background:currentAvatar.color, display:'flex', alignItems:'center', justifyContent:'center', padding:10, flexShrink:0, boxShadow:'0 4px 0 rgba(0,0,0,0.3)' }}>
+            {currentAvatar.svg}
           </div>
           <div style={{ flex:1, minWidth:0 }}>
             {editingName ? (
@@ -126,18 +130,23 @@ export default function PerfilPage() {
           </div>
         </div>
 
-        {/* Emoji Picker */}
-        <div style={{ fontSize:10, fontWeight:900, textTransform:'uppercase', letterSpacing:'1.5px', color:'#8a6030', marginBottom:8 }}>Foto de perfil</div>
-        <div style={{ display:'flex', gap:7, flexWrap:'wrap' }}>
-          {EMOJIS.map(e => (
-            <div key={e} onClick={() => saveAvatar(e)} style={{
-              width:44, height:44, borderRadius:10,
-              background: avatar === e ? 'linear-gradient(180deg,#FFDF00,#c8960c)' : 'rgba(255,255,255,0.5)',
-              border: `2px solid ${avatar === e ? '#c8960c' : '#c0a060'}`,
+        {/* Avatar Picker */}
+        <div style={{ fontSize:10, fontWeight:900, textTransform:'uppercase', letterSpacing:'1.5px', color:'#8a6030', marginBottom:10 }}>Foto de perfil</div>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(5, 1fr)', gap:8 }}>
+          {AVATARS.map(a => (
+            <div key={a.id} onClick={() => saveAvatar(a.id)} style={{
+              aspectRatio: '1', borderRadius:12,
+              background: a.color,
+              border: `3px solid ${avatarId === a.id ? '#FFDF00' : 'transparent'}`,
               display:'flex', alignItems:'center', justifyContent:'center',
-              fontSize:22, cursor:'pointer',
-              boxShadow: avatar === e ? '0 3px 0 #805800' : '0 2px 0 #a07040',
-            }}>{e}</div>
+              padding: 8, cursor:'pointer',
+              boxShadow: avatarId === a.id ? '0 0 0 1px #805800, 0 3px 0 rgba(0,0,0,0.3)' : '0 3px 0 rgba(0,0,0,0.2)',
+              opacity: avatarId === a.id ? 1 : 0.7,
+              transition: 'all 0.15s',
+              transform: avatarId === a.id ? 'scale(1.08)' : 'scale(1)',
+            }}>
+              {a.svg}
+            </div>
           ))}
         </div>
       </div>
@@ -159,7 +168,9 @@ export default function PerfilPage() {
             const pr = roleInfo(p.player_role)
             return (
               <div key={p.id} style={{ background:'linear-gradient(180deg,#f0e4cc,#e0d0a8)', border:'2px solid #c8a870', borderRadius:12, padding:'12px 14px', display:'flex', alignItems:'center', gap:12, boxShadow:'0 3px 0 #a07040' }}>
-                <div style={{ fontSize:24 }}>⚔️</div>
+                <div style={{ width:36, height:36, borderRadius:10, background:currentAvatar.color, display:'flex', alignItems:'center', justifyContent:'center', padding:6, flexShrink:0, boxShadow:'0 2px 0 rgba(0,0,0,0.25)' }}>
+                  {currentAvatar.svg}
+                </div>
                 <div style={{ flex:1 }}>
                   <div style={{ fontSize:14, fontWeight:900, color:'#1a0800' }}>{p.player_name}</div>
                   <div style={{ display:'flex', alignItems:'center', gap:5, marginTop:3 }}>

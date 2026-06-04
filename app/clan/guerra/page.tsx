@@ -71,7 +71,11 @@ export default function GuerraPage() {
     setMode('none')
   }, [])
 
-  useEffect(() => { load() }, [load])
+  useEffect(() => {
+    load()
+    window.addEventListener('page-refresh', load)
+    return () => window.removeEventListener('page-refresh', load)
+  }, [load])
 
   function sendNudge(tag: string) { setNudged(prev => new Set([...prev, tag])) }
 

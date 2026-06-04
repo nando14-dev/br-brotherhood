@@ -34,6 +34,7 @@ export default function ClanPage() {
   const supabase = createClient()
 
   async function load() {
+    setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { router.push('/login'); return }
     try {
@@ -48,7 +49,11 @@ export default function ClanPage() {
     setLoading(false)
   }
 
-  useEffect(() => { load() }, [])
+  useEffect(() => {
+    load()
+    window.addEventListener('page-refresh', load)
+    return () => window.removeEventListener('page-refresh', load)
+  }, [])
 
   if (loading) return <LoadingScreen />
 

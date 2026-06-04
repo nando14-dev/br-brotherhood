@@ -22,7 +22,7 @@ const ACHIEVEMENTS = [
   { id: 'day60',     icon: '💀', name: 'Já acabou, Jéssica?',                 desc: '60 dias seguidos. Isso não é streak, isso é vício.' },
   { id: 'forum10',   icon: '📝', name: 'Furumeiro',                           desc: '10 posts publicados no fórum. Voz ativa do clã.' },
   { id: 'vampire',   icon: '🧛', name: 'Vampiro Doido',                       desc: 'Acessou o app entre meia-noite e 5h da manhã. Dorme, mano.' },
-  { id: 'historian', icon: '📜', name: 'Achou!',                              desc: 'Descobriu o histórico de versões do app. Curioso mesmo.' },
+  { id: 'historian', icon: '📜', name: 'Achou!',                              desc: 'Descobriu algo escondido no app. Olhos atentos.' },
   { id: 'secret',    icon: '❓', name: '????',                                desc: '!!!!' },
 ]
 
@@ -50,13 +50,17 @@ export default function StreakPage() {
   const [forumPostCount, setForumPostCount] = useState(0)
   const [isVampire, setIsVampire] = useState(false)
   const [foundHistory, setFoundHistory] = useState(false)
+  const [foundFlag, setFoundFlag] = useState(false)
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [secretTaps, setSecretTaps] = useState(0)
-  const [secretUnlocked, setSecretUnlocked] = useState(false)
+  const [secretUnlocked, setSecretUnlocked] = useState(
+    typeof window !== 'undefined' && localStorage.getItem('brb_secret_unlocked') === 'true'
+  )
   const router = useRouter()
   const supabase = createClient()
 
   const load = useCallback(async () => {
+    setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { router.push('/login'); return }
 
@@ -67,6 +71,7 @@ export default function StreakPage() {
     setIsVampire(hour >= 0 && hour < 5)
 
     setFoundHistory(typeof window !== 'undefined' && localStorage.getItem('found_history') === 'true')
+    setFoundFlag(typeof window !== 'undefined' && localStorage.getItem('found_flag') === 'true')
 
     const [streakRes, allRes, forumRes] = await Promise.all([
       supabase.from('streaks').select('current_streak, last_checkin').eq('user_id', user.id).single(),
@@ -82,10 +87,34 @@ export default function StreakPage() {
     if (allRes.data) setAllStreaks(allRes.data as any)
     if (forumRes.count !== null) setForumPostCount(forumRes.count)
 
+    // Marca todas as conquistas atualmente desbloqueadas como vistas e limpa o badge
+    if (typeof window !== 'undefined') {
+      const seen: string[] = JSON.parse(localStorage.getItem('brb_seen_ach') || '[]')
+      const nowUnlocked: string[] = []
+      if (createdDate === '2026-05-31') nowUnlocked.push('founder')
+      if (streakRes.data?.current_streak >= 7)  nowUnlocked.push('day7')
+      if (streakRes.data?.current_streak >= 14) nowUnlocked.push('day14')
+      if (streakRes.data?.current_streak >= 30) nowUnlocked.push('day30')
+      if (streakRes.data?.current_streak >= 45) nowUnlocked.push('day45')
+      if (streakRes.data?.current_streak >= 60) nowUnlocked.push('day60')
+      if ((forumRes.count ?? 0) >= 10) nowUnlocked.push('forum10')
+      if (hour >= 0 && hour < 5) nowUnlocked.push('vampire')
+      if (localStorage.getItem('found_history') === 'true' || localStorage.getItem('found_flag') === 'true') nowUnlocked.push('historian')
+      if (localStorage.getItem('brb_secret_unlocked') === 'true') nowUnlocked.push('secret')
+      const merged = [...new Set([...seen, ...nowUnlocked])]
+      localStorage.setItem('brb_seen_ach', JSON.stringify(merged))
+      localStorage.setItem('brb_ach_badge', '0')
+      window.dispatchEvent(new Event('achievement-badge-update'))
+    }
+
     setLoading(false)
   }, [])
 
-  useEffect(() => { load() }, [load])
+  useEffect(() => {
+    load()
+    window.addEventListener('page-refresh', load)
+    return () => window.removeEventListener('page-refresh', load)
+  }, [load])
 
   async function doCheckin() {
     if (checkedIn) return
@@ -121,7 +150,7 @@ export default function StreakPage() {
       case 'day60':     return myStreak >= 60
       case 'forum10':   return forumPostCount >= 10
       case 'vampire':   return isVampire
-      case 'historian': return foundHistory
+      case 'historian': return foundHistory || foundFlag
       case 'secret':    return secretUnlocked
       default:          return false
     }
@@ -211,7 +240,12 @@ export default function StreakPage() {
                     if (a.id === 'secret' && !secretUnlocked) {
                       const next = secretTaps + 1
                       setSecretTaps(next)
-                      if (next >= 14) setSecretUnlocked(true)
+                      if (next >= 14) {
+                      setSecretUnlocked(true)
+                      if (typeof window !== 'undefined') {
+                        localStorage.setItem('brb_secret_unlocked', 'true')
+                      }
+                    }
                       return
                     }
                     setExpandedId(expanded ? null : a.id)
