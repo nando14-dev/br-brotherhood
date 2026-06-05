@@ -39,6 +39,9 @@ html, body {
 .animate-slide-up  { animation: slide-up 0.3s ease both; }
 
 @media screen and (orientation: landscape) {
+  html, body {
+    background: #000 !important;
+  }
   body > * {
     display: none !important;
   }
