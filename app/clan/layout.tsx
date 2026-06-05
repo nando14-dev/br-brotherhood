@@ -92,7 +92,7 @@ export default function ClanLayout({ children }: { children: React.ReactNode }) 
     }}>
       {/* Fundo textura */}
       <div style={{
-        position: 'fixed', inset: 0, maxWidth: 430,
+        position: 'absolute', inset: 0,
         background: 'linear-gradient(180deg, #5a3a18 0%, #3d2510 100%)',
         pointerEvents: 'none', zIndex: 0,
       }} />
