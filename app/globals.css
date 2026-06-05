@@ -43,13 +43,13 @@ html, body {
     display: none !important;
   }
   body::after {
-    content: '🔄 Gire o celular para usar o app';
+    content: 'Gire o celular para usar o app';
     position: fixed; inset: 0; z-index: 9999;
-    background: #3a1000;
+    background: #000;
     display: flex; align-items: center; justify-content: center;
     font-family: 'Nunito', sans-serif;
     font-size: 18px; font-weight: 900;
-    color: #FFDF00; text-align: center;
+    color: #fff; text-align: center;
     padding: 20px;
   }
 }
