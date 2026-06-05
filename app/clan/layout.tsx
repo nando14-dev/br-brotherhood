@@ -1,12 +1,13 @@
 'use client'
 
+import React from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import EmberBackground from '@/components/EmberBackground'
 import Header from '@/components/Header'
 import { useRef, useState, useEffect } from 'react'
 import ReleaseNotes from '@/components/ReleaseNotes'
 
-const TABS = [
+const TABS: { href: string; label: string; icon: React.ReactNode; badge?: boolean }[] = [
   {
     href: '/clan', label: 'Clã', icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="26" height="26">
