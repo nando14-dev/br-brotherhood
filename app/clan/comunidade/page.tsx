@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import LoadingScreen from '@/components/LoadingScreen'
 import PullToRefresh from '@/components/PullToRefresh'
+import { getAvatar } from '@/lib/avatars'
 
 type Tab = 'recrutar' | 'forum' | 'news'
 
@@ -299,8 +300,8 @@ export default function ComunidadePage() {
                 <div style={{ position: 'absolute', top: 10, right: 10, fontSize: 16, lineHeight: 1 }}>📌</div>
               )}
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <div style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
-                  {p.profiles?.avatar_emoji || '⚔️'}
+                <div style={{ width: 32, height: 32, borderRadius: 8, overflow: 'hidden', border: '2px solid #c8960c', flexShrink: 0 }}>
+                  <img src={getAvatar(p.profiles?.avatar_emoji || '').img} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 12, fontWeight: 900, color: '#3a1000' }}>{p.profiles?.display_name || 'Membro'}</div>
