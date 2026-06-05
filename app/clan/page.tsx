@@ -30,6 +30,7 @@ export default function ClanPage() {
   const [clan, setClan] = useState<ClanData | null>(null)
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const router = useRouter()
   const supabase = createClient()
 
@@ -45,7 +46,9 @@ export default function ClanPage() {
       setClan(await cr.json())
       const md = await mr.json()
       setMembers(md.items || [])
-    } catch (e) { console.error(e) }
+    } catch (e) {
+      setError('Não foi possível carregar os dados do clã. Tente novamente.')
+    }
     setLoading(false)
   }
 
@@ -57,6 +60,14 @@ export default function ClanPage() {
 
   if (loading) return <LoadingScreen />
 
+  if (error) return (
+    <div style={{ height:'100%', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:24, gap:12 }}>
+      <div style={{ fontSize:48 }}>⚠️</div>
+      <div style={{ fontSize:14, fontWeight:900, color:'#fff', textAlign:'center' }}>{error}</div>
+      <button onClick={load} style={{ background:'linear-gradient(180deg,#FFDF00,#c8960c)', border:'none', borderRadius:12, padding:'10px 24px', fontSize:13, fontWeight:900, color:'#3a1000', cursor:'pointer', boxShadow:'0 3px 0 #805800' }}>Tentar novamente</button>
+    </div>
+  )
+
   return (
     <PullToRefresh onRefresh={load}>
       <div style={{ padding: '10px 10px 20px' }}>
@@ -65,7 +76,7 @@ export default function ClanPage() {
         <div style={{ background: 'linear-gradient(180deg,#f5ead8,#e8d8b8)', border: '2px solid #c8a870', borderRadius: 14, padding: 12, marginBottom: 10, boxShadow: '0 4px 0 #a07040, 0 6px 16px rgba(0,0,0,0.2)', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg,#009C3B,#FFDF00,#009C3B)' }} />
           <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginBottom: 12 }}>
-            <div style={{ width: 72, height: 72, borderRadius: 12, background: 'linear-gradient(135deg,#1a3060,#3a1060)', border: '3px solid #c8960c', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 36, flexShrink: 0, boxShadow: '0 4px 0 #805800', position: 'relative' }}>
+            <div style={{ width: 72, height: 72, borderRadius: 12, background: 'linear-gradient(135deg,#5a2a08,#3a1000)', border: '3px solid #c8960c', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 36, flexShrink: 0, boxShadow: '0 4px 0 #805800', position: 'relative' }}>
               🇧🇷
               <div style={{ position: 'absolute', bottom: -8, left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(180deg,#FFDF00,#c8960c)', color: '#3a1000', fontSize: 9, fontWeight: 900, padding: '1px 8px', borderRadius: 8, whiteSpace: 'nowrap', boxShadow: '0 2px 0 rgba(0,0,0,0.3)', border: '1px solid #fff' }}>
                 Nív. {clan?.clanLevel}
@@ -135,7 +146,7 @@ export default function ClanPage() {
                     <span>🏆</span>
                     <span style={{ fontSize: 13, fontWeight: 900, color: '#3a1000' }}>{m.trophies?.toLocaleString('pt-BR')}</span>
                   </div>
-                  <div style={{ fontSize: 9, fontWeight: 800, color: '#888', marginTop: 2 }}>⬆️{m.donations} ⬇️{m.donationsReceived}</div>
+                  <div style={{ fontSize: 9, fontWeight: 800, color: '#888', marginTop: 2 }}>🎁 {m.donations} · 📥 {m.donationsReceived}</div>
                 </div>
               </div>
             )

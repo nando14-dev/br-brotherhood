@@ -7,6 +7,9 @@ export default function ServiceWorker() {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(console.error)
     }
+    if (screen.orientation?.lock) {
+      screen.orientation.lock('portrait').catch(() => {})
+    }
   }, [])
   return null
 }

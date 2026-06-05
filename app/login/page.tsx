@@ -100,7 +100,7 @@ export default function LoginPage() {
       <div style={{ width:'100%', maxWidth:380, display:'flex', flexDirection:'column', alignItems:'center', position:'relative', zIndex:1 }}>
 
         {/* LOGO */}
-        <div style={{ width:80, height:80, borderRadius:20, background:'linear-gradient(135deg,#1a3060,#3a1060)', border:'3px solid #c8960c', display:'flex', alignItems:'center', justifyContent:'center', fontSize:42, marginBottom:12, boxShadow:'0 6px 0 #805800, 0 8px 20px rgba(0,0,0,0.3)' }}>
+        <div style={{ width:80, height:80, borderRadius:20, background:'linear-gradient(135deg,#5a2a08,#3a1000)', border:'3px solid #c8960c', display:'flex', alignItems:'center', justifyContent:'center', fontSize:42, marginBottom:12, boxShadow:'0 6px 0 #805800, 0 8px 20px rgba(0,0,0,0.3)' }}>
           🇧🇷
         </div>
         <div style={{ fontFamily:"'Nunito', sans-serif", fontSize:24, fontWeight:900, color:'#1a0800', letterSpacing:2, marginBottom:4, textAlign:'center' }}>BR BROTHERHOOD</div>
@@ -115,7 +115,7 @@ export default function LoginPage() {
             <button style={btnPrimary} onClick={handleLogin} disabled={loading}>{loading ? 'Entrando...' : 'Entrar'}</button>
             <div style={{ display:'flex', alignItems:'center', gap:12 }}>
               <div style={{ flex:1, height:2, background:'linear-gradient(90deg,#c8960c,transparent)', borderRadius:1 }} />
-              <span style={{ fontSize:11, fontWeight:700, color:'#8a6030' }}>novo por aqui?</span>
+              <span style={{ fontSize:11, fontWeight:700, color:'#8a6030' }}>Novo por aqui?</span>
               <div style={{ flex:1, height:2, background:'linear-gradient(270deg,#c8960c,transparent)', borderRadius:1 }} />
             </div>
             <button style={btnSecondary} onClick={() => setMode('register')}>Criar conta</button>

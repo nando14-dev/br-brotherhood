@@ -57,7 +57,7 @@ export default function Header() {
 
         <div style={{ flex:1, minWidth:0 }}>
           <div style={{ fontSize:15, fontWeight:900, color:'#fff', textShadow:'0 1px 3px rgba(0,0,0,0.6)', letterSpacing:'0.5px', lineHeight:1 }}>BR BROTHERHOOD</div>
-          <div style={{ fontSize:9, fontWeight:700, color:'rgba(255,255,255,0.5)', marginTop:2, letterSpacing:'1px' }}>#P9P2RRG · 39 membros</div>
+          <div style={{ fontSize:9, fontWeight:700, color:'rgba(255,255,255,0.5)', marginTop:2, letterSpacing:'1px', textTransform:'uppercase' }}>#P9P2RRG</div>
         </div>
 
         <div onClick={() => router.push('/clan/streak')} style={{ display:'flex', alignItems:'center', gap:4, background:'linear-gradient(135deg,#7c2d12,#c2410c)', border:'2px solid #f97316', borderRadius:20, padding:'4px 10px', boxShadow:'0 3px 0 rgba(0,0,0,0.4)', cursor:'pointer' }}>

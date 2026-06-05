@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import LoadingScreen from '@/components/LoadingScreen'
-import ReleaseNotes from '@/components/ReleaseNotes'
 import PullToRefresh from '@/components/PullToRefresh'
 
 type Tab = 'recrutar' | 'forum' | 'news'
@@ -34,10 +33,10 @@ export default function ComunidadePage() {
   const [newNewsBody, setNewNewsBody] = useState('')
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState('')
+  const [error, setError] = useState('')
   const [clanRole, setClanRole] = useState('member')
   const [userId, setUserId] = useState('')
   const [flagTaps, setFlagTaps] = useState(0)
-  const [showRelease, setShowRelease] = useState(false)
   const supabase = createClient()
 
   const isAdmin = clanRole === 'leader' || clanRole === 'coLeader'
@@ -53,7 +52,7 @@ export default function ComunidadePage() {
     const next = flagTaps + 1
     setFlagTaps(next)
     if (next >= 10) {
-      setShowRelease(true)
+      window.dispatchEvent(new Event('force-release-notes'))
       setFlagTaps(0)
       if (typeof window !== 'undefined') {
         const seen: string[] = JSON.parse(localStorage.getItem('brb_seen_ach') || '[]')
@@ -97,16 +96,20 @@ export default function ComunidadePage() {
 
   async function loadPosts() {
     setLoading(true)
-    const { data } = await supabase
+    setError('')
+    const { data, error: err } = await supabase
       .from('forum_posts')
       .select('*, profiles(display_name, avatar_emoji)')
       .order('pinned', { ascending: false })
       .order('created_at', { ascending: false })
+      .limit(30)
+    if (err) setError('Erro ao carregar posts. Tente novamente.')
     if (data) setPosts(data as any)
     setLoading(false)
   }
 
   async function togglePin(p: Post) {
+    if (!isAdmin) return
     if (!p.pinned) {
       const pinnedCount = posts.filter(x => x.pinned).length
       if (pinnedCount >= 2) { showToast('⚠️ Máximo de 2 posts pinnados'); return }
@@ -117,7 +120,9 @@ export default function ComunidadePage() {
 
   async function loadNews() {
     setLoading(true)
-    const { data } = await supabase.from('clan_news').select('*, profiles(display_name)').order('created_at', { ascending: false })
+    setError('')
+    const { data, error: err } = await supabase.from('clan_news').select('*, profiles(display_name)').order('created_at', { ascending: false }).limit(30)
+    if (err) setError('Erro ao carregar news. Tente novamente.')
     if (data) setNews(data as any)
     setLoading(false)
   }
@@ -151,6 +156,7 @@ export default function ComunidadePage() {
   }
 
   async function deleteNews(id: string) {
+    if (!isAdmin) return
     await supabase.from('clan_news').delete().eq('id', id)
     showToast('🗑️ News removida')
     loadNews()
@@ -206,11 +212,6 @@ export default function ComunidadePage() {
           }}>{flagTaps}</div>
         )}
       </div>
-
-      {/* RELEASE NOTES via easter egg */}
-      {showRelease && (
-        <ReleaseNotes forceOpen={showRelease} onClose={() => setShowRelease(false)} />
-      )}
 
       {/* TABS */}
       <div style={{ display: 'flex', gap: 0, marginBottom: 12, borderRadius: 12, overflow: 'hidden', border: '2px solid #c0a060', boxShadow: '0 3px 0 #a07040' }}>
@@ -284,7 +285,9 @@ export default function ComunidadePage() {
             </div>
           )}
 
-          {loading ? <LoadingScreen /> : posts.length === 0 ? (
+          {error ? (
+            <div style={{ textAlign:'center', padding:'40px 20px', color:'#dc2626', fontWeight:900, fontSize:13 }}>{error}</div>
+          ) : loading ? <LoadingScreen /> : posts.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '40px 20px', color: '#8a6030' }}>
               <div style={{ fontSize: 40, marginBottom: 12 }}>💬</div>
               <div style={{ fontSize: 13, fontWeight: 900 }}>Nenhum tópico ainda</div>
@@ -305,7 +308,7 @@ export default function ComunidadePage() {
                 </div>
                 <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                   {isAdmin && (
-                    <button onClick={() => togglePin(p)} style={{ background: p.pinned ? 'rgba(200,150,12,0.15)' : 'rgba(0,0,0,0.06)', border: `1px solid ${p.pinned ? '#c8960c' : 'rgba(0,0,0,0.15)'}`, borderRadius: 7, padding: '4px 7px', fontSize: 13, cursor: 'pointer' }} title={p.pinned ? 'Despinnar' : 'Pinnar'}>📌</button>
+                    <button onClick={() => togglePin(p)} style={{ background: p.pinned ? 'linear-gradient(180deg,#FFDF00,#c8960c)' : 'linear-gradient(180deg,#e8d8b8,#d8c8a0)', border: `1px solid ${p.pinned ? '#805800' : '#c0a060'}`, borderRadius: 7, padding: '4px 7px', fontSize: 13, cursor: 'pointer', boxShadow: p.pinned ? '0 2px 0 #805800' : '0 2px 0 #a07040' }} title={p.pinned ? 'Despinnar' : 'Pinnar'}>📌</button>
                   )}
                   {(isAdmin || p.user_id === userId) && (
                     <button onClick={() => deletePost(p.id)} style={{ background: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.3)', borderRadius: 7, padding: '4px 8px', fontSize: 11, color: '#dc2626', cursor: 'pointer', fontWeight: 900 }}>🗑️</button>
@@ -347,7 +350,9 @@ export default function ComunidadePage() {
             </div>
           )}
 
-          {loading ? <LoadingScreen /> : news.length === 0 ? (
+          {error ? (
+            <div style={{ textAlign:'center', padding:'40px 20px', color:'#dc2626', fontWeight:900, fontSize:13 }}>{error}</div>
+          ) : loading ? <LoadingScreen /> : news.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '40px 20px', color: '#8a6030' }}>
               <div style={{ fontSize: 40, marginBottom: 12 }}>📰</div>
               <div style={{ fontSize: 13, fontWeight: 900 }}>Nenhuma news ainda</div>

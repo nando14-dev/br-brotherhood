@@ -254,9 +254,31 @@ export default function GuerraPage() {
         {standings.map((c, i) => {
           const isBR = c.tag === '#P9P2RRG'
           const medalColors = ['#e87030', '#9090b0', '#c09050']
+          const total = standings.length
+          const isPromotion = i < 2
+          const isRelegation = i >= total - 2
+          const arrow = isPromotion
+            ? <span style={{ fontSize: 10, color: '#22c55e', fontWeight: 900, lineHeight: 1 }}>▲</span>
+            : isRelegation
+            ? <span style={{ fontSize: 10, color: '#ef4444', fontWeight: 900, lineHeight: 1 }}>▼</span>
+            : null
           return (
-            <div key={c.tag} style={{ background: isBR ? 'linear-gradient(180deg,#fff8d0,#f5e070)' : 'linear-gradient(180deg,#f0e4cc,#e0d0a8)', border: `2px solid ${isBR ? '#c8960c' : '#c0a060'}`, borderRadius: 12, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6, boxShadow: isBR ? '0 3px 0 #805800' : '0 3px 0 #a07040' }}>
-              <div style={{ width: 24, height: 24, borderRadius: 6, background: i < 3 ? medalColors[i] : 'rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 900, color: i < 3 ? '#fff' : '#8a6030', flexShrink: 0 }}>{i + 1}</div>
+            <div key={c.tag} style={{
+              background: isPromotion
+                ? (isBR ? 'linear-gradient(180deg,#fff8d0,#f5e070)' : 'linear-gradient(180deg,#e8f5e9,#d0edcc)')
+                : isRelegation
+                ? 'linear-gradient(180deg,#fdecea,#f9d0cc)'
+                : isBR
+                ? 'linear-gradient(180deg,#fff8d0,#f5e070)'
+                : 'linear-gradient(180deg,#f0e4cc,#e0d0a8)',
+              border: `2px solid ${isPromotion ? (isBR ? '#c8960c' : '#86efac') : isRelegation ? '#fca5a5' : isBR ? '#c8960c' : '#c0a060'}`,
+              borderRadius: 12, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6,
+              boxShadow: isPromotion ? (isBR ? '0 3px 0 #805800' : '0 3px 0 #16a34a') : isRelegation ? '0 3px 0 #dc2626' : isBR ? '0 3px 0 #805800' : '0 3px 0 #a07040',
+            }}>
+              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+                {arrow}
+                <div style={{ width: 24, height: 24, borderRadius: 6, background: i < 3 ? medalColors[i] : 'rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 900, color: i < 3 ? '#fff' : '#8a6030' }}>{i + 1}</div>
+              </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 900, color: '#1a0800', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.name}{isBR ? ' 🇧🇷' : ''}</div>
                 <div style={{ fontSize: 9, fontWeight: 800, color: '#8a6030', marginTop: 2 }}>

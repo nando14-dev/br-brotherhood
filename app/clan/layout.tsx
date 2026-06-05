@@ -30,7 +30,7 @@ const TABS = [
         <path d="M19 13l2-2-4-4-2 2" />
         <path d="M3 21l7-7" />
       </svg>
-    ), badge: true
+    )
   },
   {
     href: '/clan/comunidade', label: 'Comunidade', icon: (

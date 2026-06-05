@@ -17,13 +17,18 @@ export default function ReleaseNotes({ forceOpen = false, onClose }: { forceOpen
     const supabase = createClient()
 
     useEffect(() => {
-        console.log('ReleaseNotes montado, forceOpen:', forceOpen)
         if (forceOpen) {
             loadLatest()
         } else {
             checkVersion()
         }
     }, [forceOpen])
+
+    useEffect(() => {
+        function onForce() { loadLatest() }
+        window.addEventListener('force-release-notes', onForce)
+        return () => window.removeEventListener('force-release-notes', onForce)
+    }, [])
 
     async function loadLatest() {
         const { data: latest } = await supabase
@@ -39,9 +44,7 @@ export default function ReleaseNotes({ forceOpen = false, onClose }: { forceOpen
     }
 
     async function checkVersion() {
-        console.log('checkVersion chamado')
         const { data: { user } } = await supabase.auth.getUser()
-        console.log('user:', user?.id)
         if (!user) return
 
         const { data: profile } = await supabase
@@ -49,7 +52,6 @@ export default function ReleaseNotes({ forceOpen = false, onClose }: { forceOpen
             .select('last_seen_version')
             .eq('id', user.id)
             .single()
-        console.log('profile:', profile)
 
         const { data: latest } = await supabase
             .from('release_notes')
@@ -57,7 +59,6 @@ export default function ReleaseNotes({ forceOpen = false, onClose }: { forceOpen
             .order('created_at', { ascending: false })
             .limit(1)
             .single()
-        console.log('latest:', latest)
 
         if (!latest) return
 

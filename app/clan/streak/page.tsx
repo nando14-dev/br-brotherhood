@@ -15,7 +15,7 @@ interface StreakUser {
 }
 
 const ACHIEVEMENTS = [
-  { id: 'founder',   icon: '🌱', name: 'Tava aqui quando tudo era mato...', desc: 'Entrou no app no dia da fundação — só os OGs têm essa.' },
+  { id: 'founder',   icon: '🌱', name: 'OG do clã', desc: 'Entrou no app no dia da fundação — só os OGs têm essa.' },
   { id: 'day7',      icon: '🔥', name: 'Tá pegando fogo, bicho!',            desc: '7 dias consecutivos de check-in.' },
   { id: 'day14',     icon: '🏆', name: 'Bicho véio',                          desc: '14 dias consecutivos. Você já é mobília aqui.' },
   { id: 'day30',     icon: '🔱', name: 'Lenda do Clã',                        desc: '30 dias seguidos. Respeito.' },
@@ -45,6 +45,7 @@ function effectiveStreak(s: StreakUser): number {
 export default function StreakPage() {
   const [myStreak, setMyStreak] = useState(0)
   const [allStreaks, setAllStreaks] = useState<StreakUser[]>([])
+  const [totalStreaks, setTotalStreaks] = useState(0)
   const [loading, setLoading] = useState(true)
   const [checkedIn, setCheckedIn] = useState(false)
   const [isFounder, setIsFounder] = useState(false)
@@ -74,9 +75,10 @@ export default function StreakPage() {
     setFoundHistory(typeof window !== 'undefined' && localStorage.getItem('found_history') === 'true')
     setFoundFlag(typeof window !== 'undefined' && localStorage.getItem('found_flag') === 'true')
 
-    const [streakRes, allRes, forumRes] = await Promise.all([
+    const [streakRes, allRes, forumRes, totalRes] = await Promise.all([
       supabase.from('streaks').select('current_streak, last_checkin').eq('user_id', user.id).single(),
       supabase.from('streaks').select('user_id, current_streak, last_checkin, profiles(display_name, avatar_emoji)').order('current_streak', { ascending: false }).limit(9),
+      supabase.from('streaks').select('*', { count: 'exact', head: true }),
       supabase.from('forum_posts').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
     ])
 
@@ -86,6 +88,7 @@ export default function StreakPage() {
       setCheckedIn(streakRes.data.last_checkin === today)
     }
     if (allRes.data) setAllStreaks(allRes.data as any)
+    if (totalRes.count !== null) setTotalStreaks(totalRes.count)
     if (forumRes.count !== null) setForumPostCount(forumRes.count)
 
     // Marca todas as conquistas atualmente desbloqueadas como vistas e limpa o badge
@@ -174,21 +177,19 @@ export default function StreakPage() {
         <div style={{ background:'linear-gradient(135deg,#7c2d12,#c2410c)', border:'2px solid #f97316', borderRadius:14, padding:16, marginBottom:10, display:'flex', alignItems:'center', gap:14, boxShadow:'0 4px 0 #5a1a08' }}>
           <div style={{ fontSize:52 }}>🔥</div>
           <div style={{ flex:1 }}>
-            <div style={{ fontSize:18, fontWeight:900, color:'#fed7aa', marginBottom:4 }}>Sua Sequência</div>
-            <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,215,170,0.7)', lineHeight:1.5 }}>
+            <div style={{ fontSize:18, fontWeight:900, color:'#fff', marginBottom:4 }}>Sua Sequência</div>
+            <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.6)', lineHeight:1.5 }}>
               {checkedIn ? 'Check-in feito hoje! Volte amanhã.' : 'Faça check-in para manter sua sequência!'}
             </div>
-            {!checkedIn && (
-              <button onClick={doCheckin} style={{ marginTop:10, background:'linear-gradient(180deg,#FFDF00,#c8960c)', border:'none', borderRadius:10, padding:'8px 16px', fontSize:12, fontWeight:900, color:'#3a1000', cursor:'pointer', boxShadow:'0 3px 0 #805800', letterSpacing:'0.5px', textTransform:'uppercase' }}>
-                Fazer Check-in
-              </button>
-            )}
+            <button onClick={doCheckin} disabled={checkedIn} style={{ marginTop:10, background: checkedIn ? 'rgba(255,255,255,0.15)' : 'linear-gradient(180deg,#FFDF00,#c8960c)', border: checkedIn ? '2px solid rgba(255,255,255,0.2)' : 'none', borderRadius:10, padding:'8px 16px', fontSize:12, fontWeight:900, color: checkedIn ? 'rgba(255,255,255,0.5)' : '#3a1000', cursor: checkedIn ? 'default' : 'pointer', boxShadow: checkedIn ? 'none' : '0 3px 0 #805800', letterSpacing:'0.5px', textTransform:'uppercase' }}>
+              {checkedIn ? '✓ Check-in feito' : 'Fazer Check-in'}
+            </button>
           </div>
           <div style={{ fontSize:52, fontWeight:900, color:'#fff', lineHeight:1, textShadow:'0 0 20px rgba(255,107,26,0.5)' }}>{myStreak}</div>
         </div>
 
         {sectionHdr('🔥 Sequências do Clã')}
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:8, marginBottom:10 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:8, marginBottom: totalStreaks > 9 ? 4 : 10 }}>
           {allStreaks.map((s, i) => {
             const eff = effectiveStreak(s)
             return (
@@ -205,11 +206,17 @@ export default function StreakPage() {
                 </div>
                 <div style={{ fontSize:10, fontWeight:900, color:'#3a1000', marginBottom:2, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{s.profiles?.display_name || '—'}</div>
                 <div style={{ fontSize:22, fontWeight:900, color: eff === 0 ? '#aaa' : i === 0 ? '#c2410c' : '#8a6030', lineHeight:1 }}>{eff}</div>
-                <div style={{ fontSize:8, fontWeight:800, textTransform:'uppercase', color:'#8a6030' }}>{eff === 0 ? 'zerado' : 'dias'}</div>
+                <div style={{ fontSize:8, fontWeight:800, textTransform:'uppercase', color:'#8a6030' }}>{eff === 0 ? 'ZERADO' : 'DIAS'}</div>
               </div>
             )
           })}
         </div>
+
+        {totalStreaks > 9 && (
+          <div style={{ textAlign:'center', fontSize:10, fontWeight:700, color:'rgba(255,255,255,0.45)', marginBottom:10 }}>
+            + {totalStreaks - 9} membros não exibidos
+          </div>
+        )}
 
         {sectionHdr('🎁 Recompensas')}
         <div style={{ background:'linear-gradient(180deg,#f5ead8,#e8d8b8)', border:'2px solid #c8a870', borderRadius:14, padding:'14px 16px', marginBottom:10, boxShadow:'0 3px 0 #a07040' }}>
@@ -220,10 +227,10 @@ export default function StreakPage() {
               <div key={r.days} style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 0', borderBottom:'1px solid rgba(160,112,64,0.2)' }}>
                 <div style={{ fontSize:20, flexShrink:0 }}>{done ? '✅' : active ? '⭐' : '🔒'}</div>
                 <div style={{ flex:1 }}>
-                  <div style={{ fontSize:12, fontWeight:900, color: done ? '#15803d' : active ? '#c8960c' : '#5a4020' }}>{r.days} dias — {r.label}</div>
+                  <div style={{ fontSize:12, fontWeight:900, color: done ? '#22c55e' : active ? '#c8960c' : '#5a4020' }}>{r.days} dias — {r.label}</div>
                   <div style={{ fontSize:10, fontWeight:700, color:'#8a6030', marginTop:1 }}>{r.desc}</div>
                 </div>
-                <div style={{ fontSize:10, fontWeight:900, color: done ? '#15803d' : active ? '#c8960c' : '#8a6030', flexShrink:0 }}>
+                <div style={{ fontSize:10, fontWeight:900, color: done ? '#22c55e' : active ? '#c8960c' : '#8a6030', flexShrink:0 }}>
                   {done ? '✓ Feito' : `${r.days - myStreak} dias`}
                 </div>
               </div>
