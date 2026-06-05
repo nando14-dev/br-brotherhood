@@ -140,6 +140,7 @@ export default function ComunidadePage() {
   }
 
   async function deletePost(id: string) {
+    if (!window.confirm('Apagar este tópico? Essa ação não pode ser desfeita.')) return
     await supabase.from('forum_posts').delete().eq('id', id)
     showToast('🗑️ Post removido')
     loadPosts()
@@ -295,28 +296,25 @@ export default function ComunidadePage() {
               <div style={{ fontSize: 11, fontWeight: 700, marginTop: 4 }}>Seja o primeiro a postar!</div>
             </div>
           ) : posts.map(p => (
-            <div key={p.id} style={{ background: 'linear-gradient(180deg,#f5ead8,#e8d8b8)', border: '2px solid #c8a870', borderRadius: 14, padding: 14, marginBottom: 8, boxShadow: '0 3px 0 #a07040', position: 'relative' }}>
-              {p.pinned && (
-                <div style={{ position: 'absolute', top: 10, right: 10, fontSize: 16, lineHeight: 1 }}>📌</div>
-              )}
+            <div key={p.id} style={{ background: 'linear-gradient(180deg,#f5ead8,#e8d8b8)', border: `2px solid ${p.pinned ? '#c8960c' : '#c8a870'}`, borderRadius: 14, padding: 14, marginBottom: 8, boxShadow: `0 3px 0 ${p.pinned ? '#805800' : '#a07040'}` }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                 <div style={{ width: 32, height: 32, borderRadius: 8, overflow: 'hidden', border: '2px solid #c8960c', flexShrink: 0 }}>
                   <img src={getAvatar(p.profiles?.avatar_emoji || '').img} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
-                <div style={{ flex: 1 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 12, fontWeight: 900, color: '#3a1000' }}>{p.profiles?.display_name || 'Membro'}</div>
                   <div style={{ fontSize: 9, fontWeight: 700, color: '#8a6030' }}>{timeAgo(p.created_at)}</div>
                 </div>
-                <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: 4, alignItems: 'center', flexShrink: 0 }}>
                   {isAdmin && (
                     <button onClick={() => togglePin(p)} style={{ background: p.pinned ? 'linear-gradient(180deg,#FFDF00,#c8960c)' : 'linear-gradient(180deg,#e8d8b8,#d8c8a0)', border: `1px solid ${p.pinned ? '#805800' : '#c0a060'}`, borderRadius: 7, padding: '4px 7px', fontSize: 13, cursor: 'pointer', boxShadow: p.pinned ? '0 2px 0 #805800' : '0 2px 0 #a07040' }} title={p.pinned ? 'Despinnar' : 'Pinnar'}>📌</button>
                   )}
                   {(isAdmin || p.user_id === userId) && (
-                    <button onClick={() => deletePost(p.id)} style={{ background: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.3)', borderRadius: 7, padding: '4px 8px', fontSize: 11, color: '#dc2626', cursor: 'pointer', fontWeight: 900 }}>🗑️</button>
+                    <button onClick={() => deletePost(p.id)} style={{ background: 'linear-gradient(180deg,#e8d8b8,#d8c8a0)', border: '1px solid #c0a060', borderRadius: 7, padding: '4px 7px', fontSize: 13, cursor: 'pointer', boxShadow: '0 2px 0 #a07040' }}>🗑️</button>
                   )}
                 </div>
               </div>
-              <div style={{ fontSize: 13, fontWeight: 900, color: '#1a0800', marginBottom: 5, lineHeight: 1.4, paddingRight: p.pinned ? 28 : 0 }}>{p.title}</div>
+              <div style={{ fontSize: 13, fontWeight: 900, color: '#1a0800', marginBottom: 5, lineHeight: 1.4 }}>{p.title}</div>
               <div style={{ fontSize: 11, fontWeight: 700, color: '#5a4020', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.content}</div>
             </div>
           ))}

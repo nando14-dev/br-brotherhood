@@ -79,14 +79,13 @@ export default function PullToRefresh({ onRefresh, children }: Props) {
             <div style={{
               position: 'absolute', inset: 6,
               borderRadius: '50%',
-              background: 'linear-gradient(135deg,#1a3060,#3a1060)',
+              background: 'linear-gradient(135deg,#3a1000,#5a2a00)',
               border: '2px solid #c8960c',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 14,
+              overflow: 'hidden',
               boxShadow: '0 0 8px rgba(200,150,0,0.2)',
               animation: refreshing ? 'ptr-pulse 1s ease infinite alternate' : 'none',
             }}>
-              🇧🇷
+              <img src="/dragon.webp" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
           </div>
         </div>
